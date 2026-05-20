@@ -1,6 +1,0 @@
-#BlueJ class context
-comment0.target=AIContext
-comment0.text=\r\n\ Snapshot\ de\ informaci\u00F3n\ que\ AIStrategy\ necesita\ para\ tomar\ decisiones.\r\n\r\n\ Por\ qu\u00E9\ existe\ esta\ clase\:\r\n\ Si\ AIStrategy\ recibiera\ el\ Player\ directamente,\ estar\u00EDa\ acoplada\r\n\ a\ la\ jerarqu\u00EDa\ de\ jugadores.\ AIContext\ es\ un\ objeto\ de\ datos\ plano\r\n\ (value\ object)\ que\ la\ estrategia\ puede\ leer\ sin\ saber\ nada\ de\ Player.\r\n\r\n\ Se\ construye\ en\ AIControlledPlayer.update()\ y\ se\ pasa\ a\ la\ estrategia.\r\n\ Es\ inmutable\:\ la\ estrategia\ solo\ lee,\ nunca\ modifica\ al\ jugador.\r\n
-comment1.params=x\ y\ width\ height\ speed
-comment1.target=AIContext(int,\ int,\ int,\ int,\ int)
-numComments=2

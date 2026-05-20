@@ -1,0 +1,15 @@
+#BlueJ class context
+comment0.target=PlayerTypeSelectorDialog
+comment0.text=\r\n\ Di\u00E1logo\ para\ seleccionar\ el\ TIPO\ de\ jugador\ (skin).\r\n\ Muestra\ los\ 3\ tipos\ definidos\ en\ el\ enunciado\:\ Blinky\ (RED),\ Inky\ (BLUE),\ Clyde\ (GREEN).\r\n\ Cada\ bot\u00F3n\ describe\ claramente\ las\ estad\u00EDsticas\ del\ skin\ para\ que\ el\ jugador\ elija\ informado.\r\n
+comment1.params=owner\ title
+comment1.target=PlayerTypeSelectorDialog(java.awt.Frame,\ java.lang.String)
+comment2.params=
+comment2.target=void\ prepareUI()
+comment3.params=type\ label\ stats
+comment3.target=javax.swing.JPanel\ buildSkinCard(domain.PlayerType,\ java.lang.String,\ java.lang.String[])
+comment3.text=\r\n\ Construye\ una\ tarjeta\ visual\ para\ cada\ skin.\r\n\ Muestra\ un\ cuadrado\ del\ color\ del\ tipo,\ el\ nombre\ y\ las\ estad\u00EDsticas.\r\n
+comment4.params=
+comment4.target=domain.PlayerType\ getSelectedType()
+comment5.params=
+comment5.target=boolean\ isConfirmed()
+numComments=6

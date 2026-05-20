@@ -1,7 +1,0 @@
-#BlueJ class context
-comment0.target=OutlineLabel
-comment1.params=text\ textColor\ outlineColor\ thickness
-comment1.target=OutlineLabel(java.lang.String,\ java.awt.Color,\ java.awt.Color,\ int)
-comment2.params=g
-comment2.target=void\ paintComponent(java.awt.Graphics)
-numComments=3
