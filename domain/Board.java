@@ -1,206 +1,455 @@
 package domain;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controlador central del juego.
- * Coordina jugadores, enemigos, monedas, zonas, colisiones y puntaje.
+ * Orquesta el loop de juego: movimiento, colisiones y tiempo.
+ *
+ * Lo que Board ya NO hace (vs la versión anterior):
+ * - No sabe cómo armar modos (eso es GameModeConfigurator).
+ * - No instancia CollisionController ni ScoreController internamente;
+ *   los recibe inyectados o los crea una sola vez al construirse.
+ * - No instancia AIPlayer ni AIPlayerExpert directamente.
+ *
+ * Lo que Board sí hace:
+ * - Guarda el estado activo (GameState).
+ * - Corre update() cada tick.
+ * - Mueve jugadores y valida límites + paredes.
+ * - Expone datos visuales a la capa de presentación.
  */
 public class Board {
 
-    private int rows;
-    private int cols;
+    private final int cols;
+    private final int rows;
 
-    private List<Player>     players;
-    private List<Enemy>      enemies;
-    private List<Coin>       coins;
-    private List<SafeZone>   safeZones;
-    private List<Walls>      walls;
-    private List<Collidable> collidables;
+    // Inyectados: fáciles de mockear en tests
+    private final ScoreController       scoreController;
+    private final GameModeConfigurator  configurator;
 
+    // Estado activo de la partida
+    private GameState state;
+
+    // CollisionController se reconstruye cuando llega un GameState nuevo
     private CollisionController collisionController;
-    private ScoreController     scoreController;
 
-    private boolean levelCompleted;
-    private int currentLevel;
-    private int timeLimit;
-    private int timeRemaining;
+    // ─────────────────────────────────────────────────────────────
+    // CONSTRUCCIÓN
+    // ─────────────────────────────────────────────────────────────
 
+    /**
+     * Constructor principal. Recibe dependencias desde afuera.
+     * Permite tests: pasá un ScoreController o configurador mockeado.
+     */
+    public Board(int cols, int rows,
+    ScoreController scoreController,
+    GameModeConfigurator configurator) {
+
+        this.cols            = cols;
+        this.rows            = rows;
+        this.scoreController = scoreController;
+        this.configurator    = configurator;
+        this.state           = new GameState();
+    }
+
+    /**
+     * Constructor de conveniencia para uso normal (sin inyección manual).
+     */
     public Board(int cols, int rows) {
-        this.cols = cols;
-        this.rows = rows;
-        this.players     = new ArrayList<>();
-        this.enemies     = new ArrayList<>();
-        this.coins       = new ArrayList<>();
-        this.safeZones   = new ArrayList<>();
-        this.walls       = new ArrayList<>();
-        this.collidables = new ArrayList<>();
-        this.scoreController = new ScoreController();
-        this.levelCompleted  = false;
+        this(cols, rows,
+            new ScoreController(),
+            new GameModeConfigurator(cols, rows));
     }
 
-    /**
-     * Carga un nivel desde un archivo .txt.
-     * @throws HardestGameException si el archivo tiene errores.
-     */
+    // ─────────────────────────────────────────────────────────────
+    // CARGA DE NIVELES — delega completamente al configurador
+    // ─────────────────────────────────────────────────────────────
+
     public void loadFromFile(File file) throws HardestGameException {
-        LevelConfig config = LevelLoader.load(file);
-        loadFromConfig(config);
+        applyState(configurator.configureSingle(file, "RED", null));
     }
 
-    /**
-     * Aplica un LevelConfig al tablero.
-     * Separado para poder testear sin archivo físico.
-     */
+    public void loadFromFile(File file,
+    String playerType) throws HardestGameException {
+        applyState(configurator.configureSingle(file, playerType, null));
+    }
+
+    public void loadFromFile(File file,
+    String playerType,
+    Color borderColor) throws HardestGameException {
+        applyState(configurator.configureSingle(file, playerType, borderColor));
+    }
+
     public void loadFromConfig(LevelConfig config) {
-        currentLevel   = 1;
-        timeLimit      = config.timeLimit;
-        timeRemaining  = config.timeLimit;
-        levelCompleted = false;
-        scoreController.reset();
+        applyState(configurator.configureSingle(config, "RED", null));
+    }
 
-        players.clear();
-        enemies.clear();
-        coins.clear();
-        safeZones.clear();
-        walls.clear();
-        collidables.clear();
+    public void loadFromConfig(LevelConfig config, String playerType) {
+        applyState(configurator.configureSingle(config, playerType, null));
+    }
 
-        // Jugador
-        Player player = new Player("Player 1",
-                config.playerX, config.playerY,
-                config.playerSize, config.playerSpeed);
-        players.add(player);
+    // ── PvP ──────────────────────────────────────────────────────
 
-        // Clasificar entidades por tipo
-        for (GameEntity entity : config.entities) {
-            if (entity instanceof Enemy)         enemies.add((Enemy) entity);
-            else if (entity instanceof Coin)     coins.add((Coin) entity);
-            else if (entity instanceof SafeZone) safeZones.add((SafeZone) entity);
-            else if (entity instanceof Walls)    walls.add((Walls) entity);
+    public void loadPvPMode(File file,
+    String p1Name, String p1Type, Color p1Border,
+    String p2Name, String p2Type, Color p2Border)
+    throws HardestGameException {
+        applyState(configurator.configurePvP(file, p1Name, p1Type, p1Border, p2Name, p2Type, p2Border));
+    }
+
+    public void loadPvPMode(File file,
+    Color p1Color,
+    Color p2Color) throws HardestGameException {
+        applyState(configurator.configurePvP(file, "Player 1", "RED", p1Color, "Player 2", "BLUE", p2Color));
+    }
+
+    // ── PvM Random ───────────────────────────────────────────────
+
+    public void loadPvMAIRandomMode(File file,
+    String playerType,
+    Color borderColor)
+    throws HardestGameException {
+        applyState(configurator.configurePvAIRandom(file, playerType, borderColor));
+    }
+
+    public void loadPvMAIRandomMode(File file,
+    Color borderColor) throws HardestGameException {
+        applyState(configurator.configurePvAIRandom(file, "RED", borderColor));
+    }
+
+    // ── PvM Expert ───────────────────────────────────────────────
+
+    public void loadPvMAIExpertMode(File file,
+    String playerType,
+    Color borderColor)
+    throws HardestGameException {
+        applyState(configurator.configurePvAIExpert(file, playerType, borderColor));
+    }
+
+    public void loadPvMAIExpertMode(File file,
+    Color borderColor) throws HardestGameException {
+        applyState(configurator.configurePvAIExpert(file, "RED", borderColor));
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // APLICAR ESTADO — único punto donde llega un GameState nuevo
+    // ─────────────────────────────────────────────────────────────
+
+    /**
+     * Reemplaza el estado activo y reconstruye el CollisionController.
+     * scoreController se resetea aquí, no en el configurador
+     * (el score es responsabilidad del Board, no del modo de juego).
+     */
+    private void applyState(GameState newState) {
+        this.state = newState;
+        this.scoreController.reset();
+        this.collisionController = new CollisionController(state.getCollidables());
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // LOOP DE JUEGO
+    // ─────────────────────────────────────────────────────────────
+
+    public void update() {
+
+        if (state.levelCompleted || state.players.isEmpty()) {
+            return;
         }
 
-        collidables.addAll(enemies);
-        collidables.addAll(coins);
-        collidables.addAll(safeZones);
+        // Mover enemigos
+        for (Enemy enemy : state.enemies) {
+            enemy.update();
+        }
 
-        collisionController = new CollisionController(collidables);
+        // Actualizar jugadores no-humanos (índice > 0: IA, P2, etc.)
+        for (int i = 1; i < state.players.size(); i++) {
+            Player p = state.players.get(i);
+
+            // Si es una IA con BFS, actualizar el estado del mundo antes de que decida
+            if (p instanceof AIControlledPlayer) {
+                AIStrategy strategy = ((AIControlledPlayer) p).getStrategy();
+                if (strategy instanceof BFSAIStrategy) {
+                    BFSAIStrategy bfs = (BFSAIStrategy) strategy;
+                    bfs.setCoinPositions(buildCoinPositions());
+                    bfs.setWallRects(buildWallRects());
+                }
+            }
+
+            p.update();
+
+            // Mover la IA según la dirección que calculó su estrategia
+            if (p instanceof AIControlledPlayer) {
+                String dir = ((AIControlledPlayer) p).getCurrentDirection();
+                movePlayer(i, dir);
+            }
+        }
+
+        // Colisiones jugador vs entidades del nivel
+        if ("PVSP".equals(state.gameMode)) {
+            // En PvP, verificar si cada jugador llegó a la zona final
+            for (Player player : state.players) {
+                collisionController.checkCollisions(
+                    player, state.coins, state.safeZones, scoreController, state.gameMode
+                );
+                // Registrar si el jugador llegó a la zona final
+                if (collisionController.checkFinalZoneReached(player, state.safeZones, state.coins)) {
+                    if (!state.playersReachedFinal.contains(player.getName())) {
+                        state.playersReachedFinal.add(player.getName());
+                    }
+                }
+            }
+            // Completar nivel cuando ambos jugadores hayan llegado
+            if (state.playersReachedFinal.size() == 2) {
+                state.levelCompleted = true;
+            }
+        } else {
+            // En single player, verificar normalmente
+            for (Player player : state.players) {
+                state.levelCompleted = collisionController.checkCollisions(
+                    player, state.coins, state.safeZones, scoreController, state.gameMode
+                );
+                if (state.levelCompleted) break;
+            }
+        }
+
+        // Colisiones entre jugadores (PvP / PvM)
+        if (state.players.size() > 1) {
+            collisionController.checkAllPlayersCollision(state.players);
+        }
     }
 
-    /** Actualiza el estado del juego en cada tick. */
-    public void update() {
-        if (levelCompleted || players.isEmpty()) return;
+    // ─────────────────────────────────────────────────────────────
+    // MOVIMIENTO
+    // ─────────────────────────────────────────────────────────────
 
-        for (Enemy enemy : enemies) enemy.update();
-
-        Player player = players.get(0);
-        levelCompleted = collisionController.checkCollisions(
-            player, coins, safeZones, scoreController
-        );
-    }
-
-    /** Mueve al jugador en la dirección indicada si no choca con pared. */
     public void movePlayer(String direction) {
-        if (players.isEmpty() || levelCompleted) return;
-        Player player = players.get(0);
+        movePlayer(0, direction);
+    }
 
-        int newX = player.getX();
-        int newY = player.getY();
-        int spd  = player.getSpeed();
-        int size = player.getWidth();
+    public void movePlayer(int playerIndex, String direction) {
+
+        if (playerIndex >= state.players.size()) return;
+        if (state.levelCompleted)               return;
+        if (direction == null || direction.equals("IDLE")) return;
+
+        Player player = state.players.get(playerIndex);
+
+        int newX  = player.getX();
+        int newY  = player.getY();
+        int speed = player.getSpeed();
+        int size  = player.getWidth();
 
         switch (direction) {
-            case "UP":         newY -= spd; break;
-            case "DOWN":       newY += spd; break;
-            case "LEFT":       newX -= spd; break;
-            case "RIGHT":      newX += spd; break;
-            case "UP_LEFT":    newX -= spd; newY -= spd; break;
-            case "UP_RIGHT":   newX += spd; newY -= spd; break;
-            case "DOWN_LEFT":  newX -= spd; newY += spd; break;
-            case "DOWN_RIGHT": newX += spd; newY += spd; break;
-            default: break;
+            case "UP":         newY -= speed;              break;
+            case "DOWN":       newY += speed;              break;
+            case "LEFT":       newX -= speed;              break;
+            case "RIGHT":      newX += speed;              break;
+            case "UP_LEFT":    newX -= speed; newY -= speed; break;
+            case "UP_RIGHT":   newX += speed; newY -= speed; break;
+            case "DOWN_LEFT":  newX -= speed; newY += speed; break;
+            case "DOWN_RIGHT": newX += speed; newY += speed; break;
         }
 
         newX = Math.max(0, Math.min(newX, cols - size));
         newY = Math.max(0, Math.min(newY, rows - size));
 
-        if (!collisionController.collidesWithWall(newX, newY, size, size, walls)) {
+        if (!collisionController.collidesWithWall(newX, newY, size, size, state.walls)) {
             player.setX(newX);
             player.setY(newY);
         }
     }
 
-    /** Descuenta un segundo. Retorna true si el tiempo se agotó. */
+    // ─────────────────────────────────────────────────────────────
+    // TIEMPO
+    // ─────────────────────────────────────────────────────────────
+
     public boolean tickTime() {
-        if (timeRemaining > 0) timeRemaining--;
-        return timeRemaining <= 0;
+        if (state.timeRemaining > 0) {
+            state.timeRemaining--;
+        }
+        return state.timeRemaining <= 0;
     }
 
-    /**
-     * Retorna info de todas las entidades para que GamePanel las pinte.
-     * GamePanel no necesita importar ninguna clase de dominio excepto Board.
-     */
+    // ─────────────────────────────────────────────────────────────
+    // RESET
+    // ─────────────────────────────────────────────────────────────
+
+    public void resetLevel() {
+        scoreController.addDeath();
+        state.levelCompleted  = false;
+        state.timeRemaining   = state.timeLimit;
+
+        // Regresar jugadores a spawn
+        for (Player p : state.players) {
+            p.die();
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // HELPERS INTERNOS — datos del mundo para estrategias de IA
+    // ─────────────────────────────────────────────────────────────
+
+    private java.util.List<int[]> buildCoinPositions() {
+        java.util.List<int[]> list = new ArrayList<>();
+        for (Coin c : state.coins) {
+            if (!c.isCollected()) {
+                list.add(new int[]{ c.getX(), c.getY() });
+            }
+        }
+        return list;
+    }
+
+    private java.util.List<int[]> buildWallRects() {
+        java.util.List<int[]> list = new ArrayList<>();
+        for (Walls w : state.walls) {
+            list.add(new int[]{ w.getX(), w.getY(), w.getWidth(), w.getHeight() });
+        }
+        return list;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // DATOS VISUALES — la capa de presentación solo llama estos
+    // ─────────────────────────────────────────────────────────────
+
     public List<int[]> getSafeZoneRects() {
         List<int[]> rects = new ArrayList<>();
-        for (SafeZone z : safeZones)
-            rects.add(new int[]{z.getX(), z.getY(), z.getWidth(), z.getHeight()});
+        for (SafeZone z : state.safeZones) {
+            rects.add(new int[]{ z.getX(), z.getY(), z.getWidth(), z.getHeight() });
+        }
         return rects;
     }
 
     public List<int[]> getWallRects() {
         List<int[]> rects = new ArrayList<>();
-        for (Walls w : walls)
-            rects.add(new int[]{w.getX(), w.getY(), w.getWidth(), w.getHeight()});
+        for (Walls w : state.walls) {
+            rects.add(new int[]{ w.getX(), w.getY(), w.getWidth(), w.getHeight() });
+        }
         return rects;
     }
 
     public List<int[]> getCoinRects() {
         List<int[]> rects = new ArrayList<>();
-        for (Coin c : coins)
-            if (!c.isCollected())
-                rects.add(new int[]{c.getX(), c.getY(), c.getWidth(), c.getHeight()});
+        for (Coin c : state.coins) {
+            if (!c.isCollected()) {
+                rects.add(new int[]{ c.getX(), c.getY(), c.getWidth(), c.getHeight() });
+            }
+        }
         return rects;
     }
 
     public List<int[]> getEnemyRects() {
         List<int[]> rects = new ArrayList<>();
-        for (Enemy e : enemies)
-            rects.add(new int[]{e.getX(), e.getY(), e.getWidth(), e.getHeight()});
+        for (Enemy e : state.enemies) {
+            rects.add(new int[]{ e.getX(), e.getY(), e.getWidth(), e.getHeight() });
+        }
         return rects;
     }
 
-    /** Retorna {x, y, w, h} del jugador, o null si no hay jugador. */
-    public int[] getPlayerRect() {
-        Player p = getPlayer();
-        if (p == null) return null;
-        return new int[]{p.getX(), p.getY(), p.getWidth(), p.getHeight()};
+    public List<int[]> getPlayerRects() {
+        List<int[]> rects = new ArrayList<>();
+        for (Player p : state.players) {
+            Color c = p.getPlayerColor();
+            Color b = p.getBorderColor();
+            rects.add(new int[]{
+                    p.getX(), p.getY(), p.getWidth(), p.getHeight(),
+                    c.getRed(), c.getGreen(), c.getBlue(),
+                    p.isShieldActive() ? 1 : 0,
+                    b.getRed(), b.getGreen(), b.getBlue()
+                });
+        }
+        return rects;
     }
 
-    public Player getPlayer()            { return players.isEmpty() ? null : players.get(0); }
+    // ─────────────────────────────────────────────────────────────
+    // GETTERS
+    // ─────────────────────────────────────────────────────────────
 
-    public List<Enemy> getEnemies()      { return enemies; }
+    public Player getPlayer()            { return state.players.isEmpty() ? null : state.players.get(0); }
 
-    public List<Coin> getCoins()         { return coins; }
+    public Player getPlayer(int index)   { return index < state.players.size() ? state.players.get(index) : null; }
 
-    public List<SafeZone> getSafeZones() { return safeZones; }
+    public List<Player>   getPlayers()   { return state.players; }
 
-    public List<Walls> getWalls()        { return walls; }
+    public int            getNumPlayers(){ return state.players.size(); }
 
-    public boolean isLevelCompleted()    { return levelCompleted; }
+    public String  getGameMode()         { return state.gameMode; }
 
-    public int getTimeRemaining()        { return timeRemaining; }
+    public boolean isLevelCompleted()    { return state.levelCompleted; }
+
+    public int     getTimeRemaining()    { return state.timeRemaining; }
+
+    public int     getCurrentLevel()     { return state.currentLevel; }
 
     public int getTotalDeaths()          { return scoreController.getTotalDeaths(); }
 
-    public int getCoinsCollected()       { return scoreController.getTotalCoins(); }
 
-    public int getTotalCoins()           { return coins.size(); }
+    public int getCoinsCollected() {
+        return scoreController.getTotalCoins();
+    }
 
-    public int getCurrentLevel()         { return currentLevel; }
+    public int getPlayerDeaths(String playerName) {
+        return scoreController.getPlayerDeaths(playerName);
+    }
+
+    public int getPlayerCoins(String playerName) {
+        return scoreController.getPlayerCoins(playerName);
+    }
+
+    /**
+     * Determina el ganador en modo PvP.
+     * Criterios:
+     * 1. Quien llegó primero (orden en playersReachedFinal)
+     * 2. Si ambos llegaron al mismo tiempo, quien tiene más monedas
+     * 3. Si tienen las mismas monedas, quien tiene menos muertes
+     * Retorna el nombre del ganador, o null si no hay ganador aún.
+     */
+    public String getPvPWinner() {
+        if (state.playersReachedFinal.size() < 2) {
+            return null;
+        }
+
+        String player1 = state.playersReachedFinal.get(0);
+        String player2 = state.playersReachedFinal.get(1);
+
+        int p1Coins = scoreController.getPlayerCoins(player1);
+        int p2Coins = scoreController.getPlayerCoins(player2);
+
+        // Si uno tiene más monedas, es el ganador
+        if (p1Coins > p2Coins) {
+            return player1;
+        } else if (p2Coins > p1Coins) {
+            return player2;
+        }
+
+        // Si tienen las mismas monedas, el que tiene menos muertes gana
+        int p1Deaths = scoreController.getPlayerDeaths(player1);
+        int p2Deaths = scoreController.getPlayerDeaths(player2);
+
+        if (p1Deaths < p2Deaths) {
+            return player1;
+        } else if (p2Deaths < p1Deaths) {
+            return player2;
+        }
+
+        // Si todo es igual, retornar el que llegó primero
+        return player1;
+    }
+
+    public int getTotalCoins()           { return state.coins.size(); }
+
+    public ScoreController getScoreController() { return scoreController; }
 
     public int getCols()                 { return cols; }
 
     public int getRows()                 { return rows; }
+
+    public List<Enemy>   getEnemies()    { return state.enemies; }
+
+    public List<Coin>    getCoins()      { return state.coins; }
+
+    public List<SafeZone> getSafeZones() { return state.safeZones; }
+
+    public List<Walls>   getWalls()      { return state.walls; }
 }

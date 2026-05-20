@@ -10,19 +10,22 @@ public class Coin extends GameEntity implements Collidable {
         super(x, y, size, size);
         this.isCollected = false;
     }
-@Override
-public void update() {
-    // no hace nada por defecto
-}
+
+    @Override
+    public void update() {
+        // no hace nada por defecto
+    }
+
     @Override
     public void onPlayerCollision(Player player, ScoreController score) {
         if (!isCollected) {
             isCollected = true;
             player.collectCoin();
-            score.addCoin();
+            score.addCoin(player.getName());
         }
     }
 
     public boolean isCollected() { return isCollected; }
+
     public void collect()        { this.isCollected = true; }
 }

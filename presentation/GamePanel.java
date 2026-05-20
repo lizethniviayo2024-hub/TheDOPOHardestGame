@@ -2,211 +2,418 @@ package presentation;
 
 import domain.Board;
 import domain.HardestGameException;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.List;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 public class GamePanel extends JPanel implements KeyListener {
 
     private Board board;
-    private Set<Integer> keysPressed = new HashSet<>();
+
+    private Set<Integer> keysPressed;
 
     private Timer gameLoopTimer;
     private Timer secondTimer;
+
+    private boolean isPaused = false;
+    private Runnable onPause;
+    private Runnable onResume;
 
     private Runnable onLevelComplete;
     private Runnable onTimeOut;
     private Runnable onHudUpdate;
 
     private static final Color COLOR_SAFE_ZONE  = new Color(144, 238, 144);
-    private static final Color COLOR_PLAYER     = Color.RED;
     private static final Color COLOR_ENEMY      = new Color(30, 100, 220);
     private static final Color COLOR_COIN       = new Color(255, 215, 0);
     private static final Color COLOR_BACKGROUND = Color.WHITE;
     private static final Color COLOR_WALL       = new Color(80, 80, 80);
 
     public GamePanel() {
+        keysPressed = new HashSet<>();
         setFocusable(true);
         addKeyListener(this);
         setBackground(COLOR_BACKGROUND);
+        addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusLost(FocusEvent e) {
+                    keysPressed.clear();
+                }
+            });
+    }
+
+    // =========================================================
+    // START LEVEL — SINGLE
+    // =========================================================
+
+    public void startLevel(int level, String playerType) {
+        stopTimers();
+        keysPressed.clear();
+        board = new Board(boardWidth(), boardHeight());
+        try {
+            board.loadFromFile(levelFile(level), playerType);
+        } catch (HardestGameException e) {
+            showError(e.getMessage());
+            return;
+        }
+        startTimers();
+        requestFocusInWindow();
+        repaint();
     }
 
     public void startLevel(int level) {
+        startLevel(level, "RED");
+    }
+
+    public void startLevel(int level, String playerType, Color borderColor) {
+        stopTimers();
+        keysPressed.clear();
+        board = new Board(boardWidth(), boardHeight());
+        try {
+            board.loadFromFile(levelFile(level), playerType, borderColor);
+        } catch (HardestGameException e) {
+            showError(e.getMessage());
+            return;
+        }
+        startTimers();
+        requestFocusInWindow();
+        repaint();
+    }
+
+    // =========================================================
+    // START LEVEL — PLAYER VS PLAYER
+    // =========================================================
+
+    public void startLevelPvP(int level,
+    String player1Name,
+    String p1Type, Color p1Border,
+    String player2Name,
+    String p2Type, Color p2Border) {
+
         stopTimers();
 
-        int w = getWidth()  > 0 ? getWidth()  : 600;
-        int h = getHeight() > 0 ? getHeight() : 400;
+        keysPressed.clear();
 
-        board = new Board(w, h);
+        board = new Board(boardWidth(), boardHeight());
 
-        File levelFile = new File("levels/level" + level + ".txt");
         try {
-            board.loadFromFile(levelFile);
+
+            board.loadPvPMode(
+                levelFile(level),
+                player1Name,
+                p1Type,
+                p1Border,
+                player2Name,
+                p2Type,
+                p2Border
+            );
+
         } catch (HardestGameException e) {
-            JOptionPane.showMessageDialog(null,
-                e.getMessage(), "Error al cargar nivel",
-                JOptionPane.ERROR_MESSAGE);
+
+            showError(e.getMessage());
+
             return;
         }
 
         startTimers();
+
         requestFocusInWindow();
+
         repaint();
-        System.out.println("Panel size: " + w + " x " + h);
     }
 
-    public void stopGame() { stopTimers(); }
+    // =========================================================
+    // START LEVEL — PLAYER VS MACHINE RANDOM
+    // =========================================================
 
-    public void setOnLevelComplete(Runnable r) { this.onLevelComplete = r; }
-    public void setOnTimeOut(Runnable r)       { this.onTimeOut = r; }
-    public void setOnHudUpdate(Runnable r)     { this.onHudUpdate = r; }
+    public void startLevelPvMAIRandom(int level,
+    String playerType,
+    Color borderColor) {
+        stopTimers();
+        keysPressed.clear();
+        board = new Board(boardWidth(), boardHeight());
+        try {
+            board.loadPvMAIRandomMode(levelFile(level), playerType, borderColor);
+        } catch (HardestGameException e) {
+            showError(e.getMessage());
+            return;
+        }
+        startTimers();
+        requestFocusInWindow();
+        repaint();
+    }
+
+    // =========================================================
+    // START LEVEL — PLAYER VS MACHINE EXPERT
+    // =========================================================
+
+    public void startLevelPvMAIExpert(int level,
+    String playerType,
+    Color borderColor) {
+        stopTimers();
+        keysPressed.clear();
+        board = new Board(boardWidth(), boardHeight());
+        try {
+            board.loadPvMAIExpertMode(levelFile(level), playerType, borderColor);
+        } catch (HardestGameException e) {
+            showError(e.getMessage());
+            return;
+        }
+        startTimers();
+        requestFocusInWindow();
+        repaint();
+    }
+
+    // =========================================================
+    // GAME LOOP
+    // =========================================================
 
     private void startTimers() {
+
         gameLoopTimer = new Timer(16, e -> {
-            if (board == null) return;
-            
-            // Procesar teclas presionadas simultáneamente
-            processMovement();
-            
-            board.update();
-            repaint();
-            if (onHudUpdate != null) onHudUpdate.run();
-            if (board.isLevelCompleted()) {
-                stopTimers();
-                if (onLevelComplete != null) onLevelComplete.run();
-            }
-        });
+                    if (board == null) return;
+
+                    if (isPaused) return;  // No actualizar si está pausado
+
+                    processHumanMovement();  // solo mueve jugadores humanos
+                    board.update();          // Board mueve IAs y resuelve colisiones
+                    repaint();
+
+                    if (onHudUpdate != null) onHudUpdate.run();
+
+                    if (board.isLevelCompleted()) {
+                        stopTimers();
+                        if (onLevelComplete != null) onLevelComplete.run();
+                    }
+            });
+
         gameLoopTimer.start();
 
         secondTimer = new Timer(1000, e -> {
-            if (board == null) return;
-            boolean timesUp = board.tickTime();
-            if (onHudUpdate != null) onHudUpdate.run();
-            if (timesUp) {
-                stopTimers();
-                if (onTimeOut != null) onTimeOut.run();
-            }
-        });
+                    if (board == null) return;
+
+                    if (isPaused) return;  // No actualizar tiempo si está pausado
+
+                    boolean timesUp = board.tickTime();
+                    if (onHudUpdate != null) onHudUpdate.run();
+
+                    if (timesUp) {
+                        stopTimers();
+                        if (onTimeOut != null) onTimeOut.run();
+                    }
+            });
+
         secondTimer.start();
     }
 
-    /**
-     * Procesa las teclas presionadas simultáneamente para detectar movimiento diagonal.
-     */
-    private void processMovement() {
-        if (keysPressed.isEmpty()) return;
-        
-        boolean up    = keysPressed.contains(KeyEvent.VK_UP)    || keysPressed.contains(KeyEvent.VK_W);
-        boolean down  = keysPressed.contains(KeyEvent.VK_DOWN)  || keysPressed.contains(KeyEvent.VK_S);
-        boolean left  = keysPressed.contains(KeyEvent.VK_LEFT)  || keysPressed.contains(KeyEvent.VK_A);
-        boolean right = keysPressed.contains(KeyEvent.VK_RIGHT) || keysPressed.contains(KeyEvent.VK_D);
-        
-        // Determinar dirección (diagonal tiene prioridad)
-        if (up && left) {
-            board.movePlayer("UP_LEFT");
-        } else if (up && right) {
-            board.movePlayer("UP_RIGHT");
-        } else if (down && left) {
-            board.movePlayer("DOWN_LEFT");
-        } else if (down && right) {
-            board.movePlayer("DOWN_RIGHT");
-        } else if (up) {
-            board.movePlayer("UP");
-        } else if (down) {
-            board.movePlayer("DOWN");
-        } else if (left) {
-            board.movePlayer("LEFT");
-        } else if (right) {
-            board.movePlayer("RIGHT");
+    // =========================================================
+    // MOVIMIENTO — solo jugadores humanos
+    //
+    // Antes este método también detectaba AIPlayer y AIPlayerExpert
+    // con instanceof y los movía manualmente. Eso ya no es necesario:
+    // Board.update() llama a update() en cada AIControlledPlayer,
+    // la estrategia calcula la dirección, y Board aplica movePlayer().
+    // GamePanel no sabe ni le importa qué estrategia usa la IA.
+    // =========================================================
+
+    private void processHumanMovement() {
+        if (board == null || board.isLevelCompleted()) return;
+
+        String gameMode = board.getGameMode();
+
+        if ("PVSP".equals(gameMode)) {
+            processPlayer1Movement();
+            processPlayer2Movement();
+        } else {
+            processPlayer1Movement();
         }
     }
+
+    private void processPlayer1Movement() {
+        movePlayerFromKeys(0,
+            keysPressed.contains(KeyEvent.VK_W),
+            keysPressed.contains(KeyEvent.VK_S),
+            keysPressed.contains(KeyEvent.VK_A),
+            keysPressed.contains(KeyEvent.VK_D)
+        );
+    }
+
+    private void processPlayer2Movement() {
+        movePlayerFromKeys(1,
+            keysPressed.contains(KeyEvent.VK_UP),
+            keysPressed.contains(KeyEvent.VK_DOWN),
+            keysPressed.contains(KeyEvent.VK_LEFT),
+            keysPressed.contains(KeyEvent.VK_RIGHT)
+        );
+    }
+
+    private void movePlayerFromKeys(int idx,
+    boolean up, boolean down,
+    boolean left, boolean right) {
+        if (up    && left)  { board.movePlayer(idx, "UP_LEFT");    return; }
+        if (up    && right) { board.movePlayer(idx, "UP_RIGHT");   return; }
+        if (down  && left)  { board.movePlayer(idx, "DOWN_LEFT");  return; }
+        if (down  && right) { board.movePlayer(idx, "DOWN_RIGHT"); return; }
+        if (up)             { board.movePlayer(idx, "UP");         return; }
+        if (down)           { board.movePlayer(idx, "DOWN");       return; }
+        if (left)           { board.movePlayer(idx, "LEFT");       return; }
+        if (right)          { board.movePlayer(idx, "RIGHT"); }
+    }
+
+    // =========================================================
+    // TIMERS
+    // =========================================================
 
     private void stopTimers() {
         if (gameLoopTimer != null) gameLoopTimer.stop();
         if (secondTimer   != null) secondTimer.stop();
     }
 
+    public void stopGame() {
+        stopTimers();
+        keysPressed.clear();
+        isPaused = false;
+    }
+
+    private void togglePause() {
+        if (board == null || board.isLevelCompleted()) {
+            return;
+        }
+
+        isPaused = !isPaused;
+        repaint();
+
+        if (isPaused) {
+            if (onPause != null) onPause.run();
+        } else {
+            if (onResume != null) onResume.run();
+        }
+    }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
+
+    public void setPaused(boolean paused) {
+        isPaused = paused;
+        repaint();
+    }
+
+    public void setOnPause(Runnable r) { onPause = r; }
+    public void setOnResume(Runnable r) { onResume = r; }
+
+    // =========================================================
+    // INPUT
+    // =========================================================
+
     @Override
     public void keyPressed(KeyEvent e) {
-        if (board == null) return;
-        int keyCode = e.getKeyCode();
-        
-        // Agregar tecla a las presionadas
-        if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W ||
-            keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S ||
-            keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A ||
-            keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) {
-            keysPressed.add(keyCode);
+        // Tecla P para pausar/reanudar
+        if (e.getKeyCode() == KeyEvent.VK_P) {
+            togglePause();
+            return;
         }
+        keysPressed.add(e.getKeyCode());
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        int keyCode = e.getKeyCode();
-        keysPressed.remove(keyCode);
+        keysPressed.remove(e.getKeyCode());
     }
 
-    @Override 
+    @Override
     public void keyTyped(KeyEvent e) {}
+
+    // =========================================================
+    // DRAW
+    // =========================================================
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
         if (board == null) {
             drawWaitingScreen(g);
             return;
         }
 
         Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON);
 
-        g2.setColor(COLOR_BACKGROUND);
-        g2.fillRect(0, 0, getWidth(), getHeight());
-
-        // Zonas seguras
         for (int[] z : board.getSafeZoneRects()) {
             g2.setColor(COLOR_SAFE_ZONE);
             g2.fillRect(z[0], z[1], z[2], z[3]);
-            g2.setColor(new Color(50, 160, 50));
-            g2.drawRect(z[0], z[1], z[2], z[3]);
         }
 
-        // Paredes
         for (int[] w : board.getWallRects()) {
             g2.setColor(COLOR_WALL);
             g2.fillRect(w[0], w[1], w[2], w[3]);
         }
 
-        // Monedas
         for (int[] c : board.getCoinRects()) {
             g2.setColor(COLOR_COIN);
             g2.fillOval(c[0], c[1], c[2], c[3]);
-            g2.setColor(new Color(200, 160, 0));
-            g2.drawOval(c[0], c[1], c[2], c[3]);
         }
 
-        // Enemigos
         for (int[] e : board.getEnemyRects()) {
             g2.setColor(COLOR_ENEMY);
             g2.fillOval(e[0], e[1], e[2], e[3]);
         }
 
-        // Jugador
-        int[] p = board.getPlayerRect();
-        if (p != null) {
-            g2.setColor(COLOR_PLAYER);
+        for (int[] p : board.getPlayerRects()) {
+            Color color  = new Color(clamp(p[4]), clamp(p[5]), clamp(p[6]));
+            Color border = new Color(clamp(p[8]), clamp(p[9]), clamp(p[10]));
+
+            g2.setColor(border);
+            g2.fillRect(p[0] - 2, p[1] - 2, p[2] + 4, p[3] + 4);
+
+            g2.setColor(color);
             g2.fillRect(p[0], p[1], p[2], p[3]);
-            g2.setColor(Color.DARK_GRAY);
-            g2.drawRect(p[0], p[1], p[2], p[3]);
+
+            if (p[7] == 1) {
+                g2.setColor(Color.YELLOW);
+                g2.setStroke(new BasicStroke(3));
+                g2.drawRect(p[0] - 3, p[1] - 3, p[2] + 6, p[3] + 6);
+                g2.setStroke(new BasicStroke(1));
+            }
         }
 
-        if (board.isLevelCompleted()) {
-            drawMessage(g2, "¡NIVEL COMPLETADO!", new Color(0, 180, 0));
+        // Dibujar pantalla de pausa si está pausado
+        if (isPaused) {
+            drawPauseScreen(g2);
         }
+    }
+
+    private void drawPauseScreen(Graphics2D g2) {
+        // Fondo semi-transparente
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRect(0, 0, getWidth(), getHeight());
+
+        // Texto de pausa
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Arial", Font.BOLD, 48));
+        String pauseText = "PAUSA";
+        FontMetrics fm = g2.getFontMetrics();
+        int x = (getWidth() - fm.stringWidth(pauseText)) / 2;
+        int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
+        g2.drawString(pauseText, x, y);
+
+        // Instrucciones
+        g2.setFont(new Font("Arial", Font.PLAIN, 18));
+        String instructionText = "Presiona P para reanudar";
+        fm = g2.getFontMetrics();
+        x = (getWidth() - fm.stringWidth(instructionText)) / 2;
+        y = y + 50;
+        g2.drawString(instructionText, x, y);
+    }
+
+    private int clamp(int v) {
+        return Math.max(0, Math.min(255, v));
     }
 
     private void drawWaitingScreen(Graphics g) {
@@ -215,19 +422,68 @@ public class GamePanel extends JPanel implements KeyListener {
         g.drawString("Selecciona un nivel para comenzar", 80, getHeight() / 2);
     }
 
-    private void drawMessage(Graphics2D g2, String msg, Color color) {
-        g2.setFont(new Font("Arial Black", Font.BOLD, 28));
-        FontMetrics fm = g2.getFontMetrics();
-        int x = (getWidth() - fm.stringWidth(msg)) / 2;
-        int y = getHeight() / 2;
-        g2.setColor(Color.BLACK);
-        g2.drawString(msg, x + 2, y + 2);
-        g2.setColor(color);
-        g2.drawString(msg, x, y);
+    // =========================================================
+    // HELPERS PRIVADOS
+    // =========================================================
+
+    private int boardWidth()  { return getWidth()  > 0 ? getWidth()  : 600; }
+
+    private int boardHeight() { return getHeight() > 0 ? getHeight() : 400; }
+
+    private File levelFile(int level) {
+        return new File("levels/level" + level + ".txt");
     }
 
-    public int getDeaths()         { return board != null ? board.getTotalDeaths()    : 0; }
-    public int getCoinsCollected() { return board != null ? board.getCoinsCollected() : 0; }
-    public int getTotalCoins()     { return board != null ? board.getTotalCoins()     : 0; }
-    public int getTimeRemaining()  { return board != null ? board.getTimeRemaining()  : 0; }
+    private void showError(String msg) {
+        JOptionPane.showMessageDialog(null, msg,
+            "Error al cargar nivel", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // =========================================================
+    // CALLBACKS
+    // =========================================================
+
+    public void setOnLevelComplete(Runnable r) { onLevelComplete = r; }
+
+    public void setOnTimeOut(Runnable r)       { onTimeOut = r; }
+
+    public void setOnHudUpdate(Runnable r)     { onHudUpdate = r; }
+
+    // =========================================================
+    // HUD
+    // =========================================================
+
+    public int  getDeaths()         { return board != null ? board.getTotalDeaths()   : 0; }
+
+    public int  getCoinsCollected() { return board != null ? board.getCoinsCollected(): 0; }
+
+    public int getPlayerDeaths(String playerName) {
+
+        if(board == null) {
+            return 0;
+        }
+
+        return board.getPlayerDeaths(playerName);
+    }
+
+    public int getPlayerCoins(String playerName) {
+
+        if(board == null) {
+            return 0;
+        }
+
+        return board.getPlayerCoins(playerName);
+    }
+
+    public int  getTotalCoins()     { return board != null ? board.getTotalCoins()    : 0; }
+
+    public int  getTimeRemaining()  { return board != null ? board.getTimeRemaining() : 0; }
+
+    public String getPvPWinner() {
+        return board != null ? board.getPvPWinner() : null;
+    }
+
+    public void addDeath() {
+        if (board != null) board.getScoreController().addDeath();
+    }
 }

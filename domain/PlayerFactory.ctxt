@@ -1,0 +1,5 @@
+#BlueJ class context
+comment0.target=PlayerFactory
+comment1.params=type\ name\ x\ y\ size\ speed
+comment1.target=Player\ createPlayer(java.lang.String,\ java.lang.String,\ int,\ int,\ int,\ int)
+numComments=2

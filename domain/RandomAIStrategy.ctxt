@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.target=RandomAIStrategy
+comment0.text=\r\n\ Estrategia\ de\ IA\ aleatoria.\r\n\ Cambia\ de\ direcci\u00F3n\ cada\ N\ ticks\ (N\ var\u00EDa\ aleatoriamente\ entre\ 5\ y\ 20).\r\n\r\n\ L\u00F3gica\ extra\u00EDda\ de\ AIPlayer,\ que\ antes\ la\ ten\u00EDa\ mezclada\r\n\ con\ la\ herencia\ de\ RedPlayer.\r\n
+comment1.params=
+comment1.target=RandomAIStrategy()
+comment2.params=context
+comment2.target=java.lang.String\ computeDirection(AIContext)
+numComments=3

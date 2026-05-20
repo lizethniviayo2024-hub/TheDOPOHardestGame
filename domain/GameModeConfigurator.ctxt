@@ -1,0 +1,26 @@
+#BlueJ class context
+comment0.target=GameModeConfigurator
+comment0.text=\r\n\ Sabe\ c\u00F3mo\ armar\ cada\ modo\ de\ juego\ y\ deja\ el\ GameState\ listo\ para\ Board.\r\n\r\n\ Responsabilidad\ \u00FAnica\:\ construir\ jugadores\ y\ poblar\ GameState\r\n\ seg\u00FAn\ el\ modo\ pedido.\ No\ sabe\ nada\ de\ colisiones,\ tiempo\ ni\ rendering.\r\n\r\n\ Para\ agregar\ un\ modo\ nuevo\:\ agregar\ un\ m\u00E9todo\ configure___()\ aqu\u00ED.\r\n\ Board\ y\ GameState\ no\ se\ tocan.\r\n
+comment1.params=boardCols\ boardRows
+comment1.target=GameModeConfigurator(int,\ int)
+comment10.params=type\ name\ x\ y\ size\ speed\ borderColor
+comment10.target=Player\ buildPlayer(java.lang.String,\ java.lang.String,\ int,\ int,\ int,\ int,\ java.awt.Color)
+comment2.params=file\ playerType\ borderColor
+comment2.target=GameState\ configureSingle(java.io.File,\ java.lang.String,\ java.awt.Color)
+comment2.text=\r\n\ Carga\ un\ nivel\ de\ un\ jugador\ desde\ archivo.\r\n
+comment3.params=config\ playerType\ borderColor
+comment3.target=GameState\ configureSingle(LevelConfig,\ java.lang.String,\ java.awt.Color)
+comment3.text=\r\n\ Carga\ un\ nivel\ de\ un\ jugador\ desde\ config\ ya\ parseada.\r\n\ \u00DAtil\ para\ tests\ (no\ necesita\ archivo\ en\ disco).\r\n
+comment4.params=file\ p1Name\ p1Type\ p1Border\ p2Name\ p2Type\ p2Border
+comment4.target=GameState\ configurePvP(java.io.File,\ java.lang.String,\ java.lang.String,\ java.awt.Color,\ java.lang.String,\ java.lang.String,\ java.awt.Color)
+comment5.params=config\ p1Name\ p1Type\ p1Border\ p2Name\ p2Type\ p2Border
+comment5.target=GameState\ configurePvP(LevelConfig,\ java.lang.String,\ java.lang.String,\ java.awt.Color,\ java.lang.String,\ java.lang.String,\ java.awt.Color)
+comment6.params=file\ playerType\ borderColor
+comment6.target=GameState\ configurePvAIRandom(java.io.File,\ java.lang.String,\ java.awt.Color)
+comment7.params=config\ playerType\ borderColor
+comment7.target=GameState\ configurePvAIRandom(LevelConfig,\ java.lang.String,\ java.awt.Color)
+comment8.params=file\ playerType\ borderColor
+comment8.target=GameState\ configurePvAIExpert(java.io.File,\ java.lang.String,\ java.awt.Color)
+comment9.params=config\ playerType\ borderColor
+comment9.target=GameState\ configurePvAIExpert(LevelConfig,\ java.lang.String,\ java.awt.Color)
+numComments=11

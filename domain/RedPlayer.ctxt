@@ -1,0 +1,5 @@
+#BlueJ class context
+comment0.target=RedPlayer
+comment1.params=name\ x\ y\ size\ baseSpeed
+comment1.target=RedPlayer(java.lang.String,\ int,\ int,\ int,\ int)
+numComments=2

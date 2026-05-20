@@ -26,7 +26,7 @@ public class Enemy extends GameEntity implements Collidable {
     @Override
     public void onPlayerCollision(Player player, ScoreController score) {
         player.die();
-        score.addDeath();
+        score.addDeath(player.getName());
     }
 
     public float getSpeed() { return speed; }

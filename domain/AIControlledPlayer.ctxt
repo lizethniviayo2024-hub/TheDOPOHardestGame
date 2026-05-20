@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.target=AIControlledPlayer
+comment0.text=\r\n\ Jugador\ controlado\ por\ una\ AIStrategy\ intercambiable.\r\n\r\n\ Antes,\ la\ l\u00F3gica\ de\ IA\ viv\u00EDa\ en\ AIPlayer\ y\ AIPlayerExpert,\r\n\ que\ heredaban\ de\ RedPlayer\ por\ conveniencia\ de\ color.\r\n\ Esto\ violaba\ LSP\:\ un\ RedPlayer\ sustituido\ por\ un\ AIPlayer\r\n\ tiene\ un\ update()\ completamente\ diferente.\r\n\r\n\ Ahora\:\r\n\ -\ AIControlledPlayer\ ES\ un\ Player,\ sin\ asumir\ color\ ni\ tipo\ concreto.\r\n\ -\ La\ estrategia\ de\ decisi\u00F3n\ (aleatoria,\ BFS,\ A*,\ etc.)\ llega\ por\ constructor.\r\n\ -\ Cambiar\ de\ estrategia\ \=\ pasar\ otra\ implementaci\u00F3n\ de\ AIStrategy.\ Nada\ m\u00E1s.\r\n\r\n\ El\ Board\ llama\ a\ update()\ igual\ que\ con\ cualquier\ Player;\r\n\ y\ luego\ lee\ getCurrentDirection()\ para\ mover\ el\ jugador.\r\n
+comment1.params=name\ x\ y\ size\ speed\ color\ strategy
+comment1.target=AIControlledPlayer(java.lang.String,\ int,\ int,\ int,\ int,\ java.awt.Color,\ AIStrategy)
+comment1.text=\r\n\ @param\ name\ \ \ \ \ \ Nombre\ visible\ del\ jugador\ IA\ ("AI\ Random",\ "AI\ Expert",\ etc.)\r\n\ @param\ x\ \ \ \ \ \ \ \ \ Posici\u00F3n\ X\ inicial\r\n\ @param\ y\ \ \ \ \ \ \ \ \ Posici\u00F3n\ Y\ inicial\r\n\ @param\ size\ \ \ \ \ \ Tama\u00F1o\ del\ jugador\r\n\ @param\ speed\ \ \ \ \ Velocidad\ en\ p\u00EDxeles\ por\ tick\r\n\ @param\ color\ \ \ \ \ Color\ visual\ (ya\ no\ forzado\ a\ rojo)\r\n\ @param\ strategy\ \ Estrategia\ de\ decisi\u00F3n.\ Se\ puede\ cambiar\ en\ runtime\ si\ se\ quiere.\r\n
+comment2.params=
+comment2.target=void\ update()
+comment2.text=\r\n\ Delega\ la\ decisi\u00F3n\ de\ movimiento\ a\ la\ estrategia.\r\n\ Board\ llama\ a\ este\ m\u00E9todo\ cada\ tick,\ igual\ que\ con\ cualquier\ Player.\r\n
+comment3.params=
+comment3.target=java.lang.String\ getCurrentDirection()
+comment3.text=\r\n\ Board\ lee\ esta\ direcci\u00F3n\ despu\u00E9s\ de\ update()\ para\ mover\ al\ jugador.\r\n
+comment4.params=
+comment4.target=AIStrategy\ getStrategy()
+comment4.text=\r\n\ Devuelve\ la\ estrategia\ activa.\r\n\ \u00DAtil\ para\ que\ el\ Board\ actualice\ el\ mundo\ en\ BFSAIStrategy\r\n\ (setCoinPositions,\ setWallRects)\ sin\ conocer\ la\ implementaci\u00F3n\ concreta.\r\n\r\n\ Ejemplo\ de\ uso\ en\ Board.update()\:\r\n\ \ \ if\ (p.getStrategy()\ instanceof\ BFSAIStrategy\ bfs)\ {\r\n\ \ \ \ \ \ \ bfs.setCoinPositions(coinPositions);\r\n\ \ \ }\r\n
+numComments=5

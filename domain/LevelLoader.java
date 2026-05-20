@@ -28,6 +28,45 @@ public class LevelLoader {
             e.setMovement(new VerticalMovement(e, num(t,5), num(t,6), num(t,7)));
             return e;
         });
+        register("ENEMY_PATROL", t -> {
+            Enemy e = new Enemy(num(t,1), num(t,2), num(t,3), num(t,4));
+            // Extraer waypoints: a partir del índice 5
+            int[] waypoints = new int[t.length - 5];
+            for (int i = 0; i < waypoints.length; i++) {
+                waypoints[i] = Integer.parseInt(t[5 + i]);
+            }
+            e.setMovement(new PatrolMovement(e, num(t,4), waypoints));
+            return e;
+        });
+        
+        // Patrulleros con rutas geométricas predefinidas
+        register("PATRULLERO_CIRCULAR", t -> {
+            // Formato: PATRULLERO_CIRCULAR x y size speed centerX centerY radius
+            return Patrullero.circular(num(t,1), num(t,2), num(t,3), num(t,4), 
+                                      num(t,5), num(t,6), num(t,7));
+        });
+        
+        register("PATRULLERO_RECTANGULO", t -> {
+            // Formato: PATRULLERO_RECTANGULO x y size speed x1 y1 x2 y2
+            return Patrullero.rectangular(num(t,1), num(t,2), num(t,3), num(t,4),
+                                         num(t,5), num(t,6), num(t,7), num(t,8));
+        });
+        
+        register("PATRULLERO_TRIANGULAR", t -> {
+            // Formato: PATRULLERO_TRIANGULAR x y size speed x1 y1 x2 y2 x3 y3
+            return Patrullero.triangular(num(t,1), num(t,2), num(t,3), num(t,4),
+                                        num(t,5), num(t,6), num(t,7), num(t,8),
+                                        num(t,9), num(t,10));
+        });
+        
+        register("PATRULLERO_PERSONALIZADO", t -> {
+            // Formato: PATRULLERO_PERSONALIZADO x y size speed x1 y1 x2 y2 ... xn yn
+            int[] waypoints = new int[t.length - 5];
+            for (int i = 0; i < waypoints.length; i++) {
+                waypoints[i] = Integer.parseInt(t[5 + i]);
+            }
+            return Patrullero.personalizado(num(t,1), num(t,2), num(t,3), num(t,4), waypoints);
+        });
     }
 
     /** Registra un parser para un tipo de línea del .txt. */
@@ -38,6 +77,11 @@ public class LevelLoader {
     /** Helper para parsear entero desde token. */
     private static int num(String[] tokens, int i) {
         return Integer.parseInt(tokens[i]);
+    }
+    
+    /** Helper para parsear float desde token. */
+    private static float f(String[] tokens, int i) {
+        return Float.parseFloat(tokens[i]);
     }
 
     /**

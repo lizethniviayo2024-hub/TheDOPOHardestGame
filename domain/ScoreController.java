@@ -1,26 +1,77 @@
 package domain;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Controlador de puntaje global de la partida.
- * Acumula muertes y monedas de todos los jugadores.
- * Board lo actualiza y la presentación lo consulta para mostrar 
+ * Controlador de puntaje para soportar 1+ jugadores.
+ * Calcula puntaje individual por jugador y puntaje total de partida.
  */
 public class ScoreController {
+    private Map<String, Integer> playerDeaths; // Muertes por jugador
+    private Map<String, Integer> playerCoins;  // Monedas por jugador
     private int totalDeaths;
     private int totalCoins;
 
     public ScoreController() {
+        this.playerDeaths = new HashMap<>();
+        this.playerCoins = new HashMap<>();
         this.totalDeaths = 0;
         this.totalCoins = 0;
     }
 
-    public void addDeath() { totalDeaths++; }
-    public void addCoin()  { totalCoins++; }
+    /**
+     * Registra una muerte para un jugador específico.
+     */
+    public void addDeath(String playerName) {
+        playerDeaths.put(playerName, playerDeaths.getOrDefault(playerName, 0) + 1);
+        totalDeaths++;
+    }
 
+    /**
+     * Registra una moneda para un jugador específico.
+     */
+    public void addCoin(String playerName) {
+        playerCoins.put(playerName, playerCoins.getOrDefault(playerName, 0) + 1);
+        totalCoins++;
+    }
+
+    /**
+     * Método heredado para compatibilidad.
+     */
+    public void addDeath() {
+        totalDeaths++;
+    }
+
+    public void addCoin() {
+        totalCoins++;
+    }
+
+    /**
+     * Calcula el puntaje final de un jugador.
+     * Fórmula: (monedas recolectadas * 10) - (muertes * 5)
+     */
+    public int calculatePlayerScore(String playerName) {
+        int coins = playerCoins.getOrDefault(playerName, 0);
+        int deaths = playerDeaths.getOrDefault(playerName, 0);
+        return (coins * 10) - (deaths * 5);
+    }
+
+    // Getters
     public int getTotalDeaths() { return totalDeaths; }
-    public int getTotalCoins()  { return totalCoins; }
+    public int getTotalCoins() { return totalCoins; }
+    
+    public int getPlayerDeaths(String playerName) {
+        return playerDeaths.getOrDefault(playerName, 0);
+    }
+
+    public int getPlayerCoins(String playerName) {
+        return playerCoins.getOrDefault(playerName, 0);
+    }
 
     public void reset() {
+        playerDeaths.clear();
+        playerCoins.clear();
         totalDeaths = 0;
         totalCoins = 0;
     }

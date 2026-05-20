@@ -1,70 +1,107 @@
 package domain;
 
-/**
- * Jugador del juego.
- * Se mueve con el teclado, tiene muertes y monedas recolectadas.
- */
-public class Player extends GameEntity {
+import java.awt.Color;
+
+public abstract class Player extends GameEntity {
+
     private int deaths;
     private int coinsCollected;
-    private boolean isAlive;
+
     private String name;
+
     private int spawnX;
     private int spawnY;
-    private int speed;
 
-    public Player(String name, int x, int y, int size, int speed) {
-        super(x, y, size, size);
+    protected int baseSpeed;
+    protected int speed;
+
+    protected Color playerColor;
+    protected Color borderColor;
+
+    public Player(String name,
+    int x,
+    int y,
+    int width,
+    int height,
+    int baseSpeed,
+    Color color) {
+
+        super(x, y, width, height);
+
         this.name = name;
-        this.deaths = 0;
-        this.coinsCollected = 0;
-        this.isAlive = true;
-        this.speed = speed;
+
+        this.baseSpeed = baseSpeed;
+        this.speed = baseSpeed;
+
+        this.playerColor = color;
+        this.borderColor = Color.BLACK;
+
         this.spawnX = x;
         this.spawnY = y;
     }
 
+    public void setBorderColor(Color borderColor) {
+        this.borderColor = (borderColor != null) ? borderColor : Color.BLACK;
+    }
+
+    public Color getBorderColor() {
+        return borderColor != null ? borderColor : Color.BLACK;
+    }
+
     @Override
     public void update() {
-        // no hace nada por defecto
+
     }
 
-    /** El jugador muere: suma una muerte y reaparece en el spawn. */
+    public void hit() {
+        die();
+    }
+
     public void die() {
+
         deaths++;
-        xPosition = spawnX;
-        yPosition = spawnY;
+
+        setX(spawnX);
+        setY(spawnY);
     }
 
-    public void collectCoin() { coinsCollected++; }
+    public void collectCoin() {
+        coinsCollected++;
+    }
 
-    public void moveUp()        { yPosition -= speed; }
+    public int getSpeed() {
+        return speed;
+    }
 
-    public void moveDown()      { yPosition += speed; }
+    public Color getPlayerColor() {
+        return playerColor;
+    }
 
-    public void moveLeft()      { xPosition -= speed; }
+    public void setPlayerColor(Color c) {
+        this.playerColor = c;
+    }
 
-    public void moveRight()     { xPosition += speed; }
+    public int getDeaths() {
+        return deaths;
+    }
 
-    public void moveUpLeft()    { xPosition -= speed; yPosition -= speed; }
+    public int getCoinsCollected() {
+        return coinsCollected;
+    }
 
-    public void moveUpRight()   { xPosition += speed; yPosition -= speed; }
+    public String getName() {
+        return name;
+    }
 
-    public void moveDownLeft()  { xPosition -= speed; yPosition += speed; }
+    public void setSpawnX(int x) {
+        spawnX = x;
+    }
 
-    public void moveDownRight() { xPosition += speed; yPosition += speed; }
+    public void setSpawnY(int y) {
+        spawnY = y;
+    }
 
-    public int getDeaths()         { return deaths; }
-
-    public int getCoinsCollected() { return coinsCollected; }
-
-    public boolean isAlive()       { return isAlive; }
-
-    public String getName()        { return name; }
-
-    public int getSpeed()          { return speed; }
-
-    public void setSpawnX(int x) { this.spawnX = x; }
-
-    public void setSpawnY(int y) { this.spawnY = y; }
+    public boolean isShieldActive() {
+        return false;
+    }
 }
