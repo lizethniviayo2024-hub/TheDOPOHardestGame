@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.target=ScoreController
+comment0.text=\r\n\ Controlador\ de\ puntaje\ global\ de\ la\ partida.\r\n\ Acumula\ muertes\ y\ monedas\ de\ todos\ los\ jugadores.\r\n\ Board\ lo\ actualiza\ y\ la\ presentaci\u00F3n\ lo\ consulta\ para\ mostrar\ \r\n
+comment1.params=
+comment1.target=ScoreController()
+comment2.params=
+comment2.target=void\ addDeath()
+comment3.params=
+comment3.target=void\ addCoin()
+comment4.params=
+comment4.target=int\ getTotalDeaths()
+comment5.params=
+comment5.target=int\ getTotalCoins()
+comment6.params=
+comment6.target=void\ reset()
+numComments=7

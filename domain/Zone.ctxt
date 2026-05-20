@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.target=Zone
+comment0.text=\r\n\ Zona\ del\ tablero.\ Puede\ ser\ segura\ (inicio,\ intermedia,\ final)\ o\ pared.\r\n
+comment1.params=x\ y\ width\ height
+comment1.target=Zone(int,\ int,\ int,\ int)
+comment2.params=player
+comment2.target=void\ onPlayerEnter(Player)
+numComments=3

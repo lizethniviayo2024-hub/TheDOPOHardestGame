@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=LevelLoader
+comment0.text=\r\n\ Lee\ archivos\ .txt\ de\ configuraci\u00F3n\ de\ niveles\ y\ construye\ un\ LevelConfig.\r\n\ Para\ a\u00F1adir\ un\ nuevo\ tipo\ de\ entidad\:\ solo\ registrar\ un\ parser\ con\ register().\r\n\ LevelLoader\ nunca\ necesita\ modificarse.\r\n
+comment1.params=type\ parser
+comment1.target=void\ register(java.lang.String,\ EntityParser)
+comment1.text=Registra\ un\ parser\ para\ un\ tipo\ de\ l\u00EDnea\ del\ .txt.
+comment2.params=tokens\ i
+comment2.target=int\ num(java.lang.String[],\ int)
+comment2.text=Helper\ para\ parsear\ entero\ desde\ token.
+comment3.params=file
+comment3.target=LevelConfig\ load(java.io.File)
+comment3.text=\r\n\ Lee\ un\ archivo\ .txt\ y\ retorna\ su\ LevelConfig.\r\n\ @throws\ HardestGameException\ si\ hay\ errores\ de\ formato\ o\ lectura.\r\n
+numComments=4

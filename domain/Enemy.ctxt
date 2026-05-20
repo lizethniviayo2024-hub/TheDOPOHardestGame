@@ -1,0 +1,15 @@
+#BlueJ class context
+comment0.target=Enemy
+comment0.text=\r\n\ Enemigo\ del\ juego.\ Tiene\ un\ patr\u00F3n\ de\ movimiento.\r\n\ Si\ toca\ al\ jugador,\ lo\ elimina.\r\n
+comment1.params=x\ y\ size\ speed
+comment1.target=Enemy(int,\ int,\ int,\ float)
+comment2.params=movement
+comment2.target=void\ setMovement(Movement)
+comment3.params=
+comment3.target=void\ update()
+comment3.text=Board\ llama\ a\ esto\ en\ cada\ tick\ del\ game\ loop.
+comment4.params=player\ score
+comment4.target=void\ onPlayerCollision(Player,\ ScoreController)
+comment5.params=
+comment5.target=float\ getSpeed()
+numComments=6

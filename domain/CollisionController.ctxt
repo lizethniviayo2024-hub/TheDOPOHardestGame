@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=CollisionController
+comment0.text=\r\n\ Detecta\ y\ resuelve\ colisiones\ entre\ objetos\ del\ juego.\r\n
+comment1.params=collidables
+comment1.target=CollisionController(java.util.List)
+comment2.params=player\ coins\ safeZones\ score
+comment2.target=boolean\ checkCollisions(Player,\ java.util.List,\ java.util.List,\ ScoreController)
+comment2.text=\r\n\ Revisa\ colisiones\ del\ jugador\ contra\ todos\ los\ collidables.\r\n\ Retorna\ true\ si\ el\ nivel\ fue\ completado.\r\n
+comment3.params=coins
+comment3.target=boolean\ allCoinsCollected(java.util.List)
+comment4.params=x\ y\ w\ h\ walls
+comment4.target=boolean\ collidesWithWall(int,\ int,\ int,\ int,\ java.util.List)
+numComments=5

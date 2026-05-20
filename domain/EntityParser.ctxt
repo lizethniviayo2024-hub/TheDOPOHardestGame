@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.target=EntityParser
+comment1.params=tokens
+comment1.target=GameEntity\ parse(java.lang.String[])
+comment1.text=\r\n\ Recibe\ los\ tokens\ de\ una\ l\u00EDnea\ del\ .txt\ y\ construye\ la\ entidad\ correspondiente.\r\n
+numComments=2

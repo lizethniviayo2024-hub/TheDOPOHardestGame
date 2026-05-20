@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.target=Movement
+comment0.text=\r\n\ Interfaz\ que\ define\ el\ comportamiento\ de\ movimiento.\r\n\ Cualquier\ tipo\ de\ movimiento\ (horizontal,\ vertical,\ zigzag)\ la\ implementa.\r\n
+comment1.params=
+comment1.target=void\ move()
+numComments=2
