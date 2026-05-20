@@ -2,83 +2,92 @@
 THE DOPO HARDEST GAME - PROYECTO FINAL
 ========================================================================
 
-PROJECT TITLE: The DOPO Hardest Game
+PROJECT TITLE:
+The DOPO Hardest Game
 
 PURPOSE OF PROJECT:
-Implementar un juego tipo "The Hardest Game" en Java con:
-- Movimiento del jugador en 8 direcciones (4 cardinales + 4 diagonales)
-- Enemigos con movimiento horizontal y vertical
-- Sistema de colisiones con paredes, bordes y enemigos
-- Recolección de monedas
-- Zonas seguras (inicial, intermedia y final)
-- Sistema de vidas y contador de monedas
-- Múltiples niveles programables
+Implementar la primera versión funcional de un juego inspirado en
+"The World's Hardest Game" en Java.
 
-VERSION: 1.0 - Entrega Parcial Final
+Esta entrega incluye:
+- Interfaz gráfica inicial
+- Configuración básica del juego
+- Primer nivel funcional
+- Movimiento básico del jugador
+- Sistema inicial de monedas
+- Punto azul básico
+- Estructura Presentation + Domain
+
+VERSION:
+Versión 1 - Presentación + Dominio
 
 HOW TO START THIS PROJECT:
-1. Abrir el proyecto en Eclipse (versión 4.31+)
-2. Asegurar que se está usando Java 21
+1. Abrir el proyecto en Eclipse
+2. Verificar que Java esté configurado correctamente
 3. Compilar el proyecto
-4. Ejecutar: presentation.HardestGameGUI
+4. Ejecutar la clase principal del paquete presentation
 
 PROJECT STRUCTURE:
+
 /domain
-  - Board.java: Controlador central del juego
-  - Player.java: Lógica del jugador y movimiento
-  - Enemy.java: Lógica de enemigos
-  - HorizontalMovement.java: Movimiento horizontal de enemigos
-  - VerticalMovement.java: Movimiento vertical de enemigos
-  - Coin.java: Sistema de monedas
-  - SafeZone.java: Zonas seguras
-  - Walls.java: Paredes
-  - CollisionController.java: Detección de colisiones
-  - ScoreController.java: Gestión de puntuación
-  - LevelLoader.java & EntityParser.java: Carga de niveles
-  - GameEntity.java: Clase base de entidades
-  - Movement.java: Interfaz de movimiento
+  - Clases principales de lógica del juego
+  - Manejo básico de entidades
+  - Movimiento inicial del jugador
 
 /presentation
-  - HardestGameGUI.java: Menú principal y gestor de niveles
-  - GamePanel.java: Panel de juego y renderizado
-  - OutlineButton.java & OutlineLabel.java: Componentes UI personalizados
+  - Interfaz gráfica
+  - Renderizado del tablero
+  - Componentes visuales
 
-/levels
-  - level1.txt a level4.txt: Definición de niveles
+/resources
+  - Recursos gráficos del juego
 
 AUTHORS:
-Grupo 7 - DOPO 2026
+Lizeth Niviayo-Paula Solano
+
+CURRENT IMPLEMENTATION:
+
+1. MAQUETA COMPLETA
+   - Diseño visual inicial del juego
+   - Distribución gráfica del tablero
+
+2. CONFIGURACIÓN DEL JUEGO
+   - Inicialización de ventana
+   - Configuración básica de ejecución
+
+3. JUGADOR
+   - Movimiento básico
+   - Representación gráfica
+
+4. NIVEL BÁSICO
+   - Primer escenario funcional
+
+5. MONEDAS
+   - Aparición de monedas en el nivel
+
+6. PUNTO AZUL BÁSICO
+   - Implementación inicial del jugador tipo "blue dot"
 
 USER INSTRUCTIONS:
-1. MENÚ PRINCIPAL:
-   - Seleccionar un nivel (1-4) con los botones
-   - Ver información de muertes y monedas recolectadas
 
-2. CONTROLES DE JUEGO:
-   - Movimiento horizontal: Flechas izquierda/derecha o A/D
-   - Movimiento vertical: Flechas arriba/abajo o W/S
-   - Movimiento diagonal: Presionar 2 teclas simultáneamente
-     * Arriba+Izquierda = Diagonal arriba-izquierda
-     * Arriba+Derecha = Diagonal arriba-derecha
-     * Abajo+Izquierda = Diagonal abajo-izquierda
-     * Abajo+Derecha = Diagonal abajo-derecha
+CONTROLES:
+- Usar teclas de dirección para mover el jugador
 
-3. OBJETIVOS DEL JUEGO:
-   - Recolectar TODAS las monedas
-   - Evitar colisiones con enemigos
-   - Llegar a la zona segura final (verde)
-   - Completar antes de que se agote el tiempo
+OBJETIVO:
+- Mover el jugador por el escenario
+- Recolectar monedas
+- Explorar el nivel básico implementado
 
-4. MECÁNICAS:
-   - Si chocas con enemigo: mueres (+1 muerte) y reapareces en inicio
-   - Si toca zona segura intermedia: punto de respawn
-   - Las paredes bloquean el movimiento (en cualquier dirección)
-   - Los bordes del juego limitan el movimiento de bordes
+NOTES:
+Esta es una entrega parcial enfocada en la arquitectura inicial,
+la interfaz gráfica y la implementación básica del juego.
 
-5. NIVELES:
-   - Nivel 1: Tutorial básico (horizontal)
-   - Nivel 2: Movimiento diagonal obligatorio
-   - Nivel 3: Movimiento vertical complejo
-   - Nivel 4: Desafío combinado (recomendado intentar último)
+Las siguientes versiones incluirán:
+- Más niveles
+- Colisiones avanzadas
+- Enemigos
+- Sistema completo de vidas
+- Mecánicas avanzadas
+- Mejoras visuales
 
 ========================================================================
