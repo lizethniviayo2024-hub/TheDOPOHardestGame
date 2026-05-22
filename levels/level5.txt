@@ -1,0 +1,22 @@
+# Nivel 5 - Patrullero (Demostración)
+# Dificultad: Media
+# Demuestra enemigos que siguen rutas geométricas predefinidas
+# Tablero: 500x300
+TIME 100
+PLAYER 30 140 20 4
+SAFEZONE_INITIAL 0 0 50 300
+SAFEZONE_FINAL 450 0 50 300
+COIN 150 80 14
+COIN 250 80 14
+COIN 350 80 14
+COIN 150 180 14
+COIN 250 180 14
+COIN 350 180 14
+# Enemigos patrulleros con diferentes rutas
+# ENEMY_PATROL x y size speed x1 y1 x2 y2 x3 y3 ...
+# Ruta rectangular: 100,80 → 350,80 → 350,150 → 100,150 (y regresa)
+ENEMY_PATROL 100 80 14 2 100 80 350 80 350 150 100 150
+# Ruta triangular: 150,200 → 350,200 → 250,260 (y regresa)
+ENEMY_PATROL 150 200 14 2 150 200 350 200 250 260
+# Ruta con 4 waypoints (rombo): 250,60 → 380,150 → 250,240 → 120,150
+ENEMY_PATROL 250 100 14 2 250 60 380 150 250 240 120 150
