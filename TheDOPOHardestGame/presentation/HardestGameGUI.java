@@ -1,4 +1,4 @@
- package presentation;
+package presentation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,1160 +9,819 @@ import domain.PlayerType;
 
 public class HardestGameGUI extends JFrame {
 
-    private JPanel container;
-    private CardLayout cardLayout;
+	private JPanel container;
+	private CardLayout cardLayout;
 
-    // MENU
-    private JButton btnPlayGame;
-    private JButton btnLeaderBoard;
-    private JButton btnExitGame;
+	// MENU
+	private JButton btnPlayGame;
+	private JButton btnLeaderBoard;
+	private JButton btnExitGame;
 
-    // GAME
-    private GamePanel gamePanel;
+	// GAME
+	private GamePanel gamePanel;
 
-    private JLabel lblDeaths;
-    private JLabel lblCoins;
-    private JLabel lblTime;
-    private JLabel lblLevel;
+	private JLabel lblDeaths;
+	private JLabel lblCoins;
+	private JLabel lblTime;
+	private JLabel lblLevel;
 
-    private JLabel lblPlayer1Info;
-    private JLabel lblPlayer2Info;
+	private JLabel lblPlayer1Info;
+	private JLabel lblPlayer2Info;
 
-    private int currentLevel = 1;
-    private String player1Name = "Player 1";
-    private String player2Name = "Player 2";
+	private int currentLevel = 1;
+	private String player1Name = "Player 1";
+	private String player2Name = "Player 2";
 
-    // MODO ACTUAL
-    private GameModeData currentGameMode;
+	private String player1SkinType = "RED";
+	private Color player1Border = Color.BLACK;
+	private int totalDeathsAccum = 0;
+	private int totalCoinsAccum = 0;
+	private int totalP1DeathsAccum = 0;
+	private int totalP1CoinsAccum = 0;
+	private int totalP2DeathsAccum = 0;
+	private int totalP2CoinsAccum = 0;
+	// MODO ACTUAL
+	private GameModeData currentGameMode;
 
+	// CONSTRUCTOR
 
-    // CONSTRUCTOR
+	public HardestGameGUI() {
 
+		setTitle("The DOPO Hardest Game");
 
-    public HardestGameGUI() {
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-        setTitle("The DOPO Hardest Game");
+		prepareElements();
 
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		prepareActions();
+	}
 
-        prepareElements();
+	// PREPARE
 
-        prepareActions();
-    }
+	private void prepareElements() {
 
+		setSize(800, 550);
 
-    // PREPARE
+		setLocationRelativeTo(null);
 
+		JPanel outerPanel = new JPanel(new BorderLayout());
 
-    private void prepareElements() {
+		outerPanel.setBackground(Color.WHITE);
 
-        setSize(800, 550);
+		outerPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-        setLocationRelativeTo(null);
+		cardLayout = new CardLayout();
 
-        JPanel outerPanel = new JPanel(new BorderLayout());
+		container = new JPanel(cardLayout);
 
-        outerPanel.setBackground(Color.WHITE);
+		container.add(prepareElementsMenu(), "MENU");
+		container.add(prepareElementsMode(), "MODE");
+		container.add(prepareElementsLEADERBOARD(), "LEADERBOARD");
+		container.add(prepareElementsONEPLAY(), "ONEPLAY");
+		container.add(prepareElementsLEVELS(), "LEVELS");
 
-        outerPanel.setBorder(
-            BorderFactory.createEmptyBorder(30, 30, 30, 30)
-        );
+		outerPanel.add(container, BorderLayout.CENTER);
 
-        cardLayout = new CardLayout();
+		add(outerPanel);
 
-        container = new JPanel(cardLayout);
+		cardLayout.show(container, "MENU");
+	}
 
-        container.add(prepareElementsMenu(), "MENU");
-        container.add(prepareElementsMode(), "MODE");
-        container.add(prepareElementsLEADERBOARD(), "LEADERBOARD");
-        container.add(prepareElementsONEPLAY(), "ONEPLAY");
-        container.add(prepareElementsLEVELS(), "LEVELS");
+	// MENU
 
-        outerPanel.add(container, BorderLayout.CENTER);
+	private JPanel prepareElementsMenu() {
 
-        add(outerPanel);
+		JPanel menuPanel = new JPanel(new BorderLayout());
 
-        cardLayout.show(container, "MENU");
-    }
+		menuPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
 
+		// TITLE
+		JPanel titlePanel = new JPanel(new BorderLayout());
 
-    // MENU
+		titlePanel.setBackground(new Color(180, 190, 230));
 
+		titlePanel.setBorder(BorderFactory.createEmptyBorder(40, 30, 0, 30));
 
-    private JPanel prepareElementsMenu() {
+		JLabel lblSubtitulo = new JLabel("The DOPO...");
 
-        JPanel menuPanel = new JPanel(new BorderLayout());
+		lblSubtitulo.setFont(new Font("Arial Black", Font.BOLD, 18));
 
-        menuPanel.setBorder(
-            BorderFactory.createLineBorder(Color.BLACK, 4)
-        );
+		lblSubtitulo.setForeground(new Color(50, 50, 100));
 
-        // TITLE
-        JPanel titlePanel = new JPanel(new BorderLayout());
+		JLabel lblTitulo = new JLabel("HARDEST GAME");
 
-        titlePanel.setBackground(new Color(180, 190, 230));
+		lblTitulo.setFont(new Font("Arial Black", Font.BOLD, 72));
 
-        titlePanel.setBorder(
-            BorderFactory.createEmptyBorder(40, 30, 0, 30)
-        );
+		lblTitulo.setForeground(new Color(70, 120, 200));
 
-        JLabel lblSubtitulo =
-            new JLabel("The DOPO...");
+		titlePanel.add(lblSubtitulo, BorderLayout.NORTH);
+		titlePanel.add(lblTitulo, BorderLayout.CENTER);
 
-        lblSubtitulo.setFont(
-            new Font("Arial Black", Font.BOLD, 18)
-        );
+		menuPanel.add(titlePanel, BorderLayout.NORTH);
 
-        lblSubtitulo.setForeground(
-            new Color(50, 50, 100)
-        );
+		// BUTTONS
+		JPanel btnPanel = new JPanel(new GridLayout(1, 3, 10, 10));
 
-        JLabel lblTitulo =
-            new JLabel("HARDEST GAME");
+		btnPanel.setBackground(new Color(180, 190, 230));
 
-        lblTitulo.setFont(
-            new Font("Arial Black", Font.BOLD, 72)
-        );
+		btnPanel.setBorder(BorderFactory.createEmptyBorder(40, 80, 60, 80));
 
-        lblTitulo.setForeground(
-            new Color(70, 120, 200)
-        );
+		btnPlayGame = createMenuButton("PLAY GAME", Color.RED);
 
-        titlePanel.add(lblSubtitulo, BorderLayout.NORTH);
-        titlePanel.add(lblTitulo, BorderLayout.CENTER);
+		btnLeaderBoard = createMenuButton("LEADER BOARD", new Color(70, 120, 200));
 
-        menuPanel.add(titlePanel, BorderLayout.NORTH);
+		btnExitGame = createMenuButton("EXIT GAME", new Color(34, 139, 34));
 
-        // BUTTONS
-        JPanel btnPanel =
-            new JPanel(new GridLayout(1, 3, 10, 10));
+		btnPanel.add(btnPlayGame);
+		btnPanel.add(btnLeaderBoard);
+		btnPanel.add(btnExitGame);
 
-        btnPanel.setBackground(new Color(180, 190, 230));
+		menuPanel.add(btnPanel, BorderLayout.CENTER);
 
-        btnPanel.setBorder(
-            BorderFactory.createEmptyBorder(40, 80, 60, 80)
-        );
+		return menuPanel;
+	}
 
-        btnPlayGame =
-        createMenuButton("PLAY GAME", Color.RED);
+	// MODES
 
-        btnLeaderBoard =
-        createMenuButton(
-            "LEADER BOARD",
-            new Color(70, 120, 200)
-        );
+	private JPanel prepareElementsMode() {
 
-        btnExitGame =
-        createMenuButton(
-            "EXIT GAME",
-            new Color(34, 139, 34)
-        );
+		JPanel modePanel = new JPanel(new BorderLayout());
 
-        btnPanel.add(btnPlayGame);
-        btnPanel.add(btnLeaderBoard);
-        btnPanel.add(btnExitGame);
+		modePanel.setBackground(new Color(100, 100, 230));
 
-        menuPanel.add(btnPanel, BorderLayout.CENTER);
+		modePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
 
-        return menuPanel;
-    }
+		JLabel lblTitle = new JLabel("SELECT MODE", JLabel.CENTER);
 
+		lblTitle.setFont(new Font("Arial Black", Font.BOLD, 20));
 
-    // MODES
+		lblTitle.setForeground(Color.WHITE);
 
+		lblTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-    private JPanel prepareElementsMode() {
+		modePanel.add(lblTitle, BorderLayout.NORTH);
 
-        JPanel modePanel =
-            new JPanel(new BorderLayout());
+		JPanel btnPanel = new JPanel(new GridLayout(4, 1, 10, 10));
 
-        modePanel.setBackground(
-            new Color(100, 100, 230)
-        );
+		btnPanel.setBackground(new Color(180, 190, 230));
 
-        modePanel.setBorder(
-            BorderFactory.createLineBorder(Color.BLACK, 4)
-        );
+		btnPanel.setBorder(BorderFactory.createEmptyBorder(40, 200, 40, 200));
 
-        JLabel lblTitle =
-            new JLabel("SELECT MODE", JLabel.CENTER);
+		JButton btnPlayer = createMenuButton("PLAYER", Color.RED);
 
-        lblTitle.setFont(
-            new Font("Arial Black", Font.BOLD, 20)
-        );
+		JButton btnPVP = createMenuButton("PLAYER VS PLAYER", Color.BLUE);
 
-        lblTitle.setForeground(Color.WHITE);
+		JButton btnPVM = createMenuButton("PLAYER VS MACHINE", Color.GREEN);
 
-        lblTitle.setBorder(
-            BorderFactory.createEmptyBorder(20, 0, 20, 0)
-        );
+		JButton btnBack = createMenuButton("BACK", Color.BLACK);
 
-        modePanel.add(lblTitle, BorderLayout.NORTH);
+		btnPanel.add(btnPlayer);
+		btnPanel.add(btnPVP);
+		btnPanel.add(btnPVM);
+		btnPanel.add(btnBack);
 
-        JPanel btnPanel =
-            new JPanel(new GridLayout(4, 1, 10, 10));
+		modePanel.add(btnPanel, BorderLayout.CENTER);
 
-        btnPanel.setBackground(
-            new Color(180, 190, 230)
-        );
+		// ACTIONS
 
-        btnPanel.setBorder(
-            BorderFactory.createEmptyBorder(
-                40,
-                200,
-                40,
-                200
-            )
-        );
+		btnBack.addActionListener(e -> cardLayout.show(container, "MENU"));
 
-        JButton btnPlayer =
-            createMenuButton("PLAYER", Color.RED);
+		btnPlayer.addActionListener(e -> {
 
-        JButton btnPVP =
-            createMenuButton(
-                "PLAYER VS PLAYER",
-                Color.BLUE
-            );
+			currentGameMode = new GameModeData(GameModeData.Mode.SINGLE_PLAYER, 1);
 
-        JButton btnPVM =
-            createMenuButton(
-                "PLAYER VS MACHINE",
-                Color.GREEN
-            );
+			cardLayout.show(container, "LEVELS");
+		});
 
-        JButton btnBack =
-            createMenuButton("BACK", Color.BLACK);
+		btnPVP.addActionListener(e -> {
 
-        btnPanel.add(btnPlayer);
-        btnPanel.add(btnPVP);
-        btnPanel.add(btnPVM);
-        btnPanel.add(btnBack);
+			currentGameMode = new GameModeData(GameModeData.Mode.PLAYER_VS_PLAYER, 1);
 
-        modePanel.add(btnPanel, BorderLayout.CENTER);
+			cardLayout.show(container, "LEVELS");
+		});
 
-        // ACTIONS
+		btnPVM.addActionListener(e -> {
 
-        btnBack.addActionListener(
-            e -> cardLayout.show(container, "MENU")
-        );
+			String[] options = { "IA Aleatoria", "IA Experta" };
 
-        btnPlayer.addActionListener(e -> {
+			int choice = JOptionPane.showOptionDialog(this, "Selecciona el tipo de IA:", "Modo vs Máquina",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
-                    currentGameMode =
-                    new GameModeData(
-                        GameModeData.Mode.SINGLE_PLAYER,
-                        1
-                    );
+			if (choice == 0) {
 
-                    cardLayout.show(container, "LEVELS");
-            });
+				currentGameMode = new GameModeData(GameModeData.Mode.PLAYER_VS_AI_RANDOM, 1);
 
-        btnPVP.addActionListener(e -> {
+			} else if (choice == 1) {
 
-                    currentGameMode =
-                    new GameModeData(
-                        GameModeData.Mode.PLAYER_VS_PLAYER,
-                        1
-                    );
+				currentGameMode = new GameModeData(GameModeData.Mode.PLAYER_VS_AI_EXPERT, 1);
 
-                    cardLayout.show(container, "LEVELS");
-            });
+			} else {
+				return;
+			}
 
-        btnPVM.addActionListener(e -> {
+			cardLayout.show(container, "LEVELS");
+		});
 
-                    String[] options = {
-                            "IA Aleatoria",
-                            "IA Experta"
-                        };
+		return modePanel;
+	}
 
-                    int choice =
-                        JOptionPane.showOptionDialog(
-                            this,
-                            "Selecciona el tipo de IA:",
-                            "Modo vs Máquina",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE,
-                            null,
-                            options,
-                            options[0]
-                        );
+	// LEADERBOARD
 
-                    if (choice == 0) {
+	private JPanel prepareElementsLEADERBOARD() {
 
-                        currentGameMode =
-                        new GameModeData(
-                            GameModeData.Mode.PLAYER_VS_AI_RANDOM,
-                            1
-                        );
+		JPanel panel = new JPanel(new BorderLayout());
 
-                    } else if (choice == 1) {
+		panel.setBackground(new Color(100, 100, 230));
 
-                        currentGameMode =
-                        new GameModeData(
-                            GameModeData.Mode.PLAYER_VS_AI_EXPERT,
-                            1
-                        );
+		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
 
-                    } else {
-                        return;
-                    }
+		JLabel title = new JLabel("LEADERBOARD", JLabel.CENTER);
 
-                    cardLayout.show(container, "LEVELS");
-            });
+		title.setFont(new Font("Arial Black", Font.BOLD, 30));
 
-        return modePanel;
-    }
+		title.setForeground(Color.WHITE);
 
+		title.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-    // LEADERBOARD
+		panel.add(title, BorderLayout.NORTH);
 
+		String[] columns = { "Player", "Deaths" };
 
-    private JPanel prepareElementsLEADERBOARD() {
+		DefaultTableModel model = new DefaultTableModel(columns, 0);
 
-        JPanel panel =
-            new JPanel(new BorderLayout());
+		JTable table = new JTable(model);
 
-        panel.setBackground(
-            new Color(100, 100, 230)
-        );
+		JScrollPane scrollPane = new JScrollPane(table);
 
-        panel.setBorder(
-            BorderFactory.createLineBorder(Color.BLACK, 4)
-        );
+		panel.add(scrollPane, BorderLayout.CENTER);
 
-        JLabel title =
-            new JLabel("LEADERBOARD", JLabel.CENTER);
+		JButton btnBack = createMenuButton("BACK", Color.BLACK);
 
-        title.setFont(
-            new Font("Arial Black", Font.BOLD, 30)
-        );
+		btnBack.addActionListener(e -> cardLayout.show(container, "MENU"));
 
-        title.setForeground(Color.WHITE);
+		panel.add(btnBack, BorderLayout.SOUTH);
 
-        title.setBorder(
-            BorderFactory.createEmptyBorder(20, 0, 20, 0)
-        );
+		return panel;
+	}
 
-        panel.add(title, BorderLayout.NORTH);
+	// LEVELS
 
-        String[] columns = {"Player", "Deaths"};
+	private JPanel prepareElementsLEVELS() {
 
-        DefaultTableModel model =
-            new DefaultTableModel(columns, 0);
+		JPanel panel = new JPanel(new BorderLayout());
 
-        JTable table = new JTable(model);
+		panel.setBackground(new Color(100, 100, 230));
 
-        JScrollPane scrollPane =
-            new JScrollPane(table);
+		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
 
-        panel.add(scrollPane, BorderLayout.CENTER);
+		JLabel title = new JLabel("SELECT LEVEL", JLabel.CENTER);
 
-        JButton btnBack =
-            createMenuButton("BACK", Color.BLACK);
+		title.setFont(new Font("Arial Black", Font.BOLD, 30));
 
-        btnBack.addActionListener(
-            e -> cardLayout.show(container, "MENU")
-        );
+		title.setForeground(Color.WHITE);
 
-        panel.add(btnBack, BorderLayout.SOUTH);
+		title.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        return panel;
-    }
+		panel.add(title, BorderLayout.NORTH);
 
+		JPanel grid = new JPanel(new GridLayout(2, 3, 20, 20));
 
-    // LEVELS
+		grid.setBackground(new Color(180, 190, 230));
 
+		grid.setBorder(BorderFactory.createEmptyBorder(40, 80, 40, 80));
 
-    private JPanel prepareElementsLEVELS() {
+		JButton lvl1 = createMenuButton("LEVEL 1", Color.RED);
+		JButton lvl2 = createMenuButton("LEVEL 2", Color.BLUE);
+		JButton lvl3 = createMenuButton("LEVEL 3", Color.GREEN);
+		JButton lvl4 = createMenuButton("LEVEL 4", new Color(150, 0, 150));
+		JButton lvl5 = createMenuButton("LEVEL 5", new Color(200, 100, 0));
 
-        JPanel panel =
-            new JPanel(new BorderLayout());
+		grid.add(lvl1);
+		grid.add(lvl2);
+		grid.add(lvl3);
+		grid.add(lvl4);
+		grid.add(lvl5);
 
-        panel.setBackground(
-            new Color(100, 100, 230)
-        );
+		panel.add(grid, BorderLayout.CENTER);
 
-        panel.setBorder(
-            BorderFactory.createLineBorder(Color.BLACK, 4)
-        );
+		JButton btnBack = createMenuButton("BACK", Color.BLACK);
 
-        JLabel title =
-            new JLabel("SELECT LEVEL", JLabel.CENTER);
+		panel.add(btnBack, BorderLayout.SOUTH);
 
-        title.setFont(
-            new Font("Arial Black", Font.BOLD, 30)
-        );
+		btnBack.addActionListener(e -> cardLayout.show(container, "MODE"));
 
-        title.setForeground(Color.WHITE);
+		lvl1.addActionListener(e -> startSelectedLevel(1));
+		lvl2.addActionListener(e -> startSelectedLevel(2));
+		lvl3.addActionListener(e -> startSelectedLevel(3));
+		lvl4.addActionListener(e -> startSelectedLevel(4));
+		lvl5.addActionListener(e -> startSelectedLevel(5));
 
-        title.setBorder(
-            BorderFactory.createEmptyBorder(20, 0, 20, 0)
-        );
+		return panel;
+	}
 
-        panel.add(title, BorderLayout.NORTH);
+	// GAME SCREEN
 
-        JPanel grid =
-            new JPanel(new GridLayout(2, 3, 20, 20));
+	private JPanel prepareElementsONEPLAY() {
 
-        grid.setBackground(
-            new Color(180, 190, 230)
-        );
+		JPanel panel = new JPanel(new BorderLayout());
 
-        grid.setBorder(
-            BorderFactory.createEmptyBorder(
-                40,
-                80,
-                40,
-                80
-            )
-        );
+		panel.setBackground(new Color(100, 100, 230));
 
-        JButton lvl1 =
-            createMenuButton("LEVEL 1", Color.RED);
+		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
 
-        JButton lvl2 =
-            createMenuButton("LEVEL 2", Color.BLUE);
+		// NORTH
+		JPanel northPanel = new JPanel(new BorderLayout());
 
-        JButton lvl3 =
-            createMenuButton("LEVEL 3", Color.GREEN);
+		northPanel.setBackground(new Color(180, 190, 230));
 
-        grid.add(lvl1);
-        grid.add(lvl2);
-        grid.add(lvl3);
+		lblLevel = new JLabel("LEVEL 1", JLabel.CENTER);
 
-        panel.add(grid, BorderLayout.CENTER);
+		lblLevel.setFont(new Font("Arial Black", Font.BOLD, 24));
 
-        JButton btnBack =
-            createMenuButton("BACK", Color.BLACK);
+		lblLevel.setForeground(Color.WHITE);
 
-        panel.add(btnBack, BorderLayout.SOUTH);
+		lblLevel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
 
-        btnBack.addActionListener(
-            e -> cardLayout.show(container, "MODE")
-        );
+		JPanel hudPanel = new JPanel(new GridLayout(1, 5));
 
-        lvl1.addActionListener(e -> startSelectedLevel(1));
-        lvl2.addActionListener(e -> startSelectedLevel(2));
-        lvl3.addActionListener(e -> startSelectedLevel(3));
+		hudPanel.setBackground(new Color(230, 190, 190));
 
-        return panel;
-    }
+		lblDeaths = new JLabel("Deaths: 0");
+		lblCoins = new JLabel("Coins: 0/0");
+		lblTime = new JLabel("Time: 0", JLabel.CENTER);
+		lblPlayer1Info = new JLabel("", JLabel.CENTER);
+		lblPlayer2Info = new JLabel("", JLabel.CENTER);
 
+		hudPanel.add(lblPlayer1Info);
+		hudPanel.add(lblPlayer2Info);
+		hudPanel.add(lblDeaths);
+		hudPanel.add(lblCoins);
+		hudPanel.add(lblTime);
 
-    // GAME SCREEN
+		northPanel.add(lblLevel, BorderLayout.NORTH);
+		northPanel.add(hudPanel, BorderLayout.CENTER);
 
+		panel.add(northPanel, BorderLayout.NORTH);
 
-    private JPanel prepareElementsONEPLAY() {
+		// GAME PANEL
 
-        JPanel panel =
-            new JPanel(new BorderLayout());
+		gamePanel = new GamePanel();
 
-        panel.setBackground(
-            new Color(100, 100, 230)
-        );
+		gamePanel.setPreferredSize(new Dimension(500, 300));
 
-        panel.setBorder(
-            BorderFactory.createLineBorder(Color.BLACK, 4)
-        );
+		gamePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
 
-        // NORTH
-        JPanel northPanel =
-            new JPanel(new BorderLayout());
+		gamePanel.setOnHudUpdate(() -> {
 
-        northPanel.setBackground(
-            new Color(180, 190, 230)
-        );
+			SwingUtilities.invokeLater(() -> {
 
-        lblLevel =
-        new JLabel("LEVEL 1", JLabel.CENTER);
+				if (currentGameMode.getMode() == GameModeData.Mode.PLAYER_VS_PLAYER) {
 
-        lblLevel.setFont(
-            new Font("Arial Black", Font.BOLD, 24)
-        );
+					// HUD PvP
 
-        lblLevel.setForeground(Color.WHITE);
+					lblDeaths.setText("");
+					lblCoins.setText("");
 
-        lblLevel.setBorder(
-            BorderFactory.createEmptyBorder(10, 0, 5, 0)
-        );
+					lblPlayer1Info.setText(
 
-        JPanel hudPanel =
-            new JPanel(
-                new GridLayout(1, 5)
-            );
+							player1Name + " | Deaths: " + gamePanel.getPlayerDeaths(player1Name) + " | Coins: "
+									+ gamePanel.getPlayerCoins(player1Name)
 
-        hudPanel.setBackground(
-            new Color(230, 190, 190)
-        );
+					);
 
-        lblDeaths = new JLabel("Deaths: 0");
-        lblCoins  = new JLabel("Coins: 0/0");
-        lblTime = new JLabel(
-            "Time: 0",
-            JLabel.CENTER
-        );
-        lblPlayer1Info = new JLabel("", JLabel.CENTER);
-        lblPlayer2Info = new JLabel("", JLabel.CENTER);
+					lblPlayer2Info.setText(
 
-        hudPanel.add(lblPlayer1Info);
-        hudPanel.add(lblPlayer2Info);
-        hudPanel.add(lblDeaths);
-        hudPanel.add(lblCoins);
-        hudPanel.add(lblTime);
+							player2Name + " | Deaths: " + gamePanel.getPlayerDeaths(player2Name) + " | Coins: "
+									+ gamePanel.getPlayerCoins(player2Name)
 
-        northPanel.add(lblLevel, BorderLayout.NORTH);
-        northPanel.add(hudPanel, BorderLayout.CENTER);
+					);
 
-        panel.add(northPanel, BorderLayout.NORTH);
+				} else {
 
-        // GAME PANEL
+					// HUD SINGLE PLAYER
 
-        gamePanel = new GamePanel();
+					lblDeaths.setText(player1Name + " | Deaths: " + gamePanel.getDeaths());
 
-        gamePanel.setPreferredSize(
-            new Dimension(500, 300)
-        );
+					lblCoins.setText("Coins: " + gamePanel.getCoinsCollected() + "/" + gamePanel.getTotalCoins());
 
-        gamePanel.setBorder(
-            BorderFactory.createLineBorder(Color.BLACK, 4)
-        );
+					lblPlayer1Info.setText("");
+					lblPlayer2Info.setText("");
+				}
+				lblTime.setText("Time: " + gamePanel.getTimeRemaining());
+			});
+		});
 
-        gamePanel.setOnHudUpdate(() -> {
+		gamePanel.setOnLevelComplete(() -> {
 
-                    SwingUtilities.invokeLater(() -> {
+			SwingUtilities.invokeLater(() -> {
 
-                                if(currentGameMode.getMode()
-                                == GameModeData.Mode.PLAYER_VS_PLAYER) {
+				showLevelCompleteDialog();
+			});
+		});
 
-                                    // HUD PvP
+		gamePanel.setOnTimeOut(() -> {
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(HardestGameGUI.this, "¡Tiempo agotado!", "Game Over",
+						JOptionPane.WARNING_MESSAGE);
+				gamePanel.timeoutReset();
+				gamePanel.resumeTimers();
+			});
+		});
 
-                                    lblDeaths.setText("");
-                                    lblCoins.setText("");
+		gamePanel.setOnPause(() -> {
 
-                                    lblPlayer1Info.setText(
+			SwingUtilities.invokeLater(() -> {
 
-                                        player1Name
-                                        + " | Deaths: "
-                                        + gamePanel.getPlayerDeaths(player1Name)
-                                        + " | Coins: "
-                                        + gamePanel.getPlayerCoins(player1Name)
+				showPauseDialog();
+			});
+		});
 
-                                    );
+		// Manejar salida al menú por tecla ESC o acción externa
+		gamePanel.setOnExitToMenu(() -> {
+			SwingUtilities.invokeLater(() -> {
+				gamePanel.stopGame();
+				cardLayout.show(container, "LEVELS");
+			});
+		});
 
-                                    lblPlayer2Info.setText(
+		JPanel centerWrapper = new JPanel(new GridBagLayout());
 
-                                        player2Name
-                                        + " | Deaths: "
-                                        + gamePanel.getPlayerDeaths(player2Name)
-                                        + " | Coins: "
-                                        + gamePanel.getPlayerCoins(player2Name)
+		centerWrapper.setBackground(new Color(100, 100, 230));
 
-                                    );
+		centerWrapper.add(gamePanel);
 
-                                } else {
+		panel.add(centerWrapper, BorderLayout.CENTER);
 
-                                    // HUD SINGLE PLAYER
+		// SOUTH
 
-                                    lblDeaths.setText(
-                                        "Deaths: " +
-                                        gamePanel.getDeaths()
-                                    );
+		JPanel southPanel = new JPanel(new BorderLayout());
 
-                                    lblCoins.setText(
-                                        "Coins: " +
-                                        gamePanel.getCoinsCollected()
-                                        + "/"
-                                        + gamePanel.getTotalCoins()
-                                    );
+		southPanel.setBackground(new Color(180, 190, 230));
 
-                                    lblPlayer1Info.setText("");
-                                    lblPlayer2Info.setText("");
-                                }
-                                lblTime.setText(
-                                    "Time: " +
-                                    gamePanel.getTimeRemaining()
-                                );
-                        });
-            });
+		// Botones de control: Pause y Volver al menú
+		JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+		controls.setOpaque(false);
 
-        gamePanel.setOnLevelComplete(() -> {
+		JButton btnPause = createMenuButton("PAUSE", new Color(70, 120, 200));
+		JButton btnBack = createMenuButton("BACK", Color.BLACK);
 
-                    SwingUtilities.invokeLater(() -> {
+		btnPause.addActionListener(e -> {
+			gamePanel.togglePauseExtern();
+		});
 
-                                showLevelCompleteDialog();
-                        });
-            });
+		btnBack.addActionListener(e -> {
+			gamePanel.stopGame();
+			cardLayout.show(container, "LEVELS");
+		});
 
-        gamePanel.setOnTimeOut(() -> {
+		controls.add(btnPause);
+		controls.add(btnBack);
 
-                    SwingUtilities.invokeLater(() -> {
+		southPanel.add(controls, BorderLayout.EAST);
 
-                                gamePanel.addDeath();
+		panel.add(southPanel, BorderLayout.SOUTH);
 
-                                JOptionPane.showMessageDialog(
-                                    this,
-                                    "¡Tiempo agotado!",
-                                    "Game Over",
-                                    JOptionPane.WARNING_MESSAGE
-                                );
+		return panel;
+	}
 
-                                startGameWithMode();
-                        });
-            });
+	// START LEVEL
 
-        gamePanel.setOnPause(() -> {
+	private void startSelectedLevel(int level) {
 
-                    SwingUtilities.invokeLater(() -> {
+		currentLevel = level;
+		totalDeathsAccum = 0;
+		totalCoinsAccum = 0;
+		totalP1DeathsAccum = 0;
+		totalP1CoinsAccum = 0;
+		totalP2DeathsAccum = 0;
+		totalP2CoinsAccum = 0;
 
-                                showPauseDialog();
-                        });
-            });
+		currentGameMode.setLevel(level);
 
-        // Manejar salida al menú por tecla ESC o acción externa
-        gamePanel.setOnExitToMenu(() -> {
-            SwingUtilities.invokeLater(() -> {
-                gamePanel.stopGame();
-                cardLayout.show(container, "LEVELS");
-            });
-        });
+		startGameWithMode();
 
-        JPanel centerWrapper =
-            new JPanel(new GridBagLayout());
+		cardLayout.show(container, "ONEPLAY");
+	}
 
-        centerWrapper.setBackground(
-            new Color(100, 100, 230)
-        );
+	// START GAME
 
-        centerWrapper.add(gamePanel);
+	private void startGameWithMode() {
 
-        panel.add(centerWrapper, BorderLayout.CENTER);
+		if (currentGameMode == null) {
+			return;
+		}
 
-        // SOUTH
+		try {
 
-        JPanel southPanel = new JPanel(new BorderLayout());
+			GameModeData.Mode mode = currentGameMode.getMode();
 
-        southPanel.setBackground(new Color(180, 190, 230));
+			int level = currentGameMode.getLevel();
 
-        // Botones de control: Pause y Volver al menú
-        JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-        controls.setOpaque(false);
+			switch (mode) {
 
-        JButton btnPause = createMenuButton("PAUSE", new Color(70, 120, 200));
-        JButton btnBack  = createMenuButton("BACK", Color.BLACK);
+			case SINGLE_PLAYER: {
+				String nombre = JOptionPane.showInputDialog(this, "Enter your name:");
+				if (nombre == null || nombre.isBlank())
+					nombre = "Player 1";
+				player1Name = nombre; // ← guardar
+				PlayerType p1Type = chooseSkin("Player 1 - Choose Skin");
+				if (p1Type == null)
+					return;
+				Color border = chooseBorder("Choose Border", p1Type.getColor());
+				player1SkinType = p1Type.name();
+				player1Border = border;
+				gamePanel.startLevel(level, player1Name, player1SkinType, player1Border);
+				break;
+			}
 
-        btnPause.addActionListener(e -> {
-            gamePanel.togglePauseExtern();
-        });
+			case PLAYER_VS_PLAYER: {
 
-        btnBack.addActionListener(e -> {
-            gamePanel.stopGame();
-            cardLayout.show(container, "LEVELS");
-        });
+				// NOMBRES DE LOS JUGADORES
 
-        controls.add(btnPause);
-        controls.add(btnBack);
+				player1Name = JOptionPane.showInputDialog(null, "Enter Player 1 Name");
 
-        southPanel.add(controls, BorderLayout.EAST);
+				player2Name = JOptionPane.showInputDialog(null, "Enter Player 2 Name");
+				if (player1Name == null || player1Name.isBlank()) {
+					player1Name = "Player 1";
+				}
 
-        panel.add(southPanel, BorderLayout.SOUTH);
+				if (player2Name == null || player2Name.isBlank()) {
+					player2Name = "Player 2";
+				}
 
-        return panel;
-    }
+				// SKINS
 
+				PlayerType p1Type = chooseSkin("Player 1");
 
-    // START LEVEL
+				if (p1Type == null) {
+					return;
+				}
 
+				PlayerType p2Type = chooseSkin("Player 2");
 
-    private void startSelectedLevel(int level) {
+				if (p2Type == null) {
+					return;
+				}
 
-        currentLevel = level;
+				Color p1Border = chooseBorder("P1 Border", p1Type.getColor());
 
-        currentGameMode.setLevel(level);
+				Color p2Border = chooseBorder("P2 Border", p2Type.getColor());
 
-        startGameWithMode();
+				// INICIAR JUEGO
 
-        cardLayout.show(container, "ONEPLAY");
-    }
+				gamePanel.startLevelPvP(level, player1Name, p1Type.name(), p1Border,
 
+						player2Name, p2Type.name(), p2Border);
 
-    // START GAME
+				break;
+			}
 
+			case PLAYER_VS_AI_RANDOM: {
 
-    private void startGameWithMode() {
+				PlayerType p1Type = chooseSkin("Choose Skin");
 
-        if (currentGameMode == null) {
-            return;
-        }
+				if (p1Type == null) {
+					return;
+				}
 
-        try {
+				Color border = chooseBorder("Choose Border", p1Type.getColor());
 
-            GameModeData.Mode mode =
-                currentGameMode.getMode();
+				gamePanel.startLevelPvMAIRandom(level, p1Type.name(), border);
 
-            int level =
-                currentGameMode.getLevel();
+				break;
+			}
 
-            switch (mode) {
+			case PLAYER_VS_AI_EXPERT: {
 
-                case SINGLE_PLAYER: {
+				PlayerType p1Type = chooseSkin("Choose Skin");
 
-                        PlayerType p1Type =
-                            chooseSkin(
-                                "Player 1 - Choose Skin"
-                            );
+				if (p1Type == null) {
+					return;
+				}
 
-                        if (p1Type == null) {
-                            return;
-                        }
+				Color border = chooseBorder("Choose Border", p1Type.getColor());
 
-                        Color border =
-                            chooseBorder(
-                                "Choose Border",
-                                p1Type.getColor()
-                            );
+				gamePanel.startLevelPvMAIExpert(level, p1Type.name(), border);
 
-                        gamePanel.startLevel(
-                            level,
-                            p1Type.name(),
-                            border
-                        );
+				break;
+			}
+			}
 
-                        break;
-                    }
+		} catch (Exception e) {
 
-                case PLAYER_VS_PLAYER: {
+			JOptionPane.showMessageDialog(this, "Error iniciando juego:\n" + e.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
 
-                        
-                        // NOMBRES DE LOS JUGADORES
-                        
+	// START GAME WITH SAME PLAYERS (PvP)
 
-                        player1Name = JOptionPane.showInputDialog(
-                            null,
-                            "Enter Player 1 Name"
-                        );
+	private void startGameWithModeSamePlayers() {
 
-                        player2Name = JOptionPane.showInputDialog(
-                            null,
-                            "Enter Player 2 Name"
-                        );
-                        if(player1Name == null || player1Name.isBlank()) {
-                            player1Name = "Player 1";
-                        }
+		if (currentGameMode == null || currentGameMode.getMode() != GameModeData.Mode.PLAYER_VS_PLAYER) {
+			startGameWithMode();
+			return;
+		}
 
-                        if(player2Name == null || player2Name.isBlank()) {
-                            player2Name = "Player 2";
-                        }
+		try {
 
-                        
-                        // SKINS
-                        
+			int level = currentGameMode.getLevel();
 
-                        PlayerType p1Type =
-                            chooseSkin("Player 1");
+			// SKINS (sin pedir nombres nuevamente)
 
-                        if (p1Type == null) {
-                            return;
-                        }
+			PlayerType p1Type = chooseSkin("Player 1");
 
-                        PlayerType p2Type =
-                            chooseSkin("Player 2");
+			if (p1Type == null) {
+				return;
+			}
 
-                        if (p2Type == null) {
-                            return;
-                        }
+			PlayerType p2Type = chooseSkin("Player 2");
 
-                        Color p1Border =
-                            chooseBorder(
-                                "P1 Border",
-                                p1Type.getColor()
-                            );
+			if (p2Type == null) {
+				return;
+			}
 
-                        Color p2Border =
-                            chooseBorder(
-                                "P2 Border",
-                                p2Type.getColor()
-                            );
+			Color p1Border = chooseBorder("P1 Border", p1Type.getColor());
 
-                        
-                        // INICIAR JUEGO
-                        
+			Color p2Border = chooseBorder("P2 Border", p2Type.getColor());
 
-                        gamePanel.startLevelPvP(
-                            level,
-                            player1Name, 
-                            p1Type.name(),
-                            p1Border,
+			// INICIAR JUEGO CON MISMOS NOMBRES
 
-                            player2Name, 
-                            p2Type.name(),
-                            p2Border
-                        );
+			gamePanel.startLevelPvP(level, player1Name, p1Type.name(), p1Border, player2Name, p2Type.name(), p2Border);
 
-                        break;
-                    }
+		} catch (Exception e) {
 
-                case PLAYER_VS_AI_RANDOM: {
+			JOptionPane.showMessageDialog(this, "Error iniciando juego:\n" + e.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
 
-                        PlayerType p1Type =
-                            chooseSkin("Choose Skin");
+	// PAUSE
 
-                        if (p1Type == null) {
-                            return;
-                        }
+	private void showPauseDialog() {
 
-                        Color border =
-                            chooseBorder(
-                                "Choose Border",
-                                p1Type.getColor()
-                            );
+		Object[] options = { "Reanudar", "Ir al menú" };
 
-                        gamePanel.startLevelPvMAIRandom(
-                            level,
-                            p1Type.name(),
-                            border
-                        );
+		int option = JOptionPane.showOptionDialog(this, "Juego pausado", "Pausa", JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
-                        break;
-                    }
+		if (option == 0) {
+			// Reanudar
+			gamePanel.setPaused(false);
+			gamePanel.requestFocusInWindow();
+		} else {
+			// Volver al menú
+			gamePanel.stopGame();
 
-                case PLAYER_VS_AI_EXPERT: {
+			cardLayout.show(container, "LEVELS");
+		}
+	}
 
-                        PlayerType p1Type =
-                            chooseSkin("Choose Skin");
+	// LEVEL COMPLETE
 
-                        if (p1Type == null) {
-                            return;
-                        }
+	private void showLevelCompleteDialog() {
 
-                        Color border =
-                            chooseBorder(
-                                "Choose Border",
-                                p1Type.getColor()
-                            );
+		String message;
 
-                        gamePanel.startLevelPvMAIExpert(
-                            level,
-                            p1Type.name(),
-                            border
-                        );
+		if (currentGameMode.getMode() == GameModeData.Mode.PLAYER_VS_PLAYER) {
+			String winner = gamePanel.getPvPWinner();
+			int winnerCoins = gamePanel.getPlayerCoins(winner);
+			int winnerDeaths = gamePanel.getPlayerDeaths(winner);
+			String otherPlayer;
+			int otherPlayerCoins;
+			int otherPlayerDeaths;
 
-                        break;
-                    }
-            }
+			// Acumular stats PvP por jugador
+			totalP1CoinsAccum += gamePanel.getPlayerCoins(player1Name);
+			totalP1DeathsAccum += gamePanel.getPlayerDeaths(player1Name);
+			totalP2CoinsAccum += gamePanel.getPlayerCoins(player2Name);
+			totalP2DeathsAccum += gamePanel.getPlayerDeaths(player2Name);
 
-        } catch (Exception e) {
+			if (player1Name.equals(winner)) {
+				otherPlayer = player2Name;
+				otherPlayerCoins = gamePanel.getPlayerCoins(player2Name);
+				otherPlayerDeaths = gamePanel.getPlayerDeaths(player2Name);
+			} else {
+				otherPlayer = player1Name;
+				otherPlayerCoins = gamePanel.getPlayerCoins(player1Name);
+				otherPlayerDeaths = gamePanel.getPlayerDeaths(player1Name);
+			}
 
-            JOptionPane.showMessageDialog(
-                this,
-                "Error iniciando juego:\n"
-                + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
+			message = "¡" + winner + " ha ganado!\n\n" + "Ganador: " + winner + "\n" + "  Monedas: " + winnerCoins
+					+ "\n" + "  Muertes: " + winnerDeaths + "\n\n" + "Perdedor: " + otherPlayer + "\n" + "  Monedas: "
+					+ otherPlayerCoins + "\n" + "  Muertes: " + otherPlayerDeaths + "\n\n" + "¿Siguiente nivel?";
+		} else {
+			totalDeathsAccum += gamePanel.getDeaths();
+			totalCoinsAccum += gamePanel.getPlayerCoins(player1Name);
+			message = "¡Nivel completado!\n¿Siguiente nivel?";
+		}
 
+		int option = JOptionPane.showConfirmDialog(this, message, "Victory", JOptionPane.YES_NO_OPTION);
 
-    // START GAME WITH SAME PLAYERS (PvP)
+		if (option == JOptionPane.YES_OPTION) {
 
+			currentLevel++;
 
-    private void startGameWithModeSamePlayers() {
+			if (currentLevel > 5) {
+				if (currentGameMode.getMode() == GameModeData.Mode.PLAYER_VS_PLAYER) {
+					JOptionPane.showMessageDialog(this,
+							"¡Completaste todos los niveles!\n\n" + player1Name + " → Monedas: " + totalP1CoinsAccum
+									+ " | Muertes: " + totalP1DeathsAccum + "\n" + player2Name + " → Monedas: "
+									+ totalP2CoinsAccum + " | Muertes: " + totalP2DeathsAccum);
+				} else {
+					JOptionPane.showMessageDialog(this, "¡Completaste todos los niveles!\n\n" + player1Name
+							+ " → Monedas: " + totalCoinsAccum + " | Muertes: " + totalDeathsAccum);
+				}
+				cardLayout.show(container, "MENU");
+				return;
+			}
 
-        if (currentGameMode == null || currentGameMode.getMode() != GameModeData.Mode.PLAYER_VS_PLAYER) {
-            startGameWithMode();
-            return;
-        }
+			currentGameMode.setLevel(currentLevel);
 
-        try {
+			if (currentGameMode.getMode() == GameModeData.Mode.PLAYER_VS_PLAYER) {
+				startGameWithModeSamePlayers();
+			} else {
+				gamePanel.startLevel(currentGameMode.getLevel(), player1Name, player1SkinType, player1Border);
+			}
 
-            int level = currentGameMode.getLevel();
+		} else {
+			cardLayout.show(container, "LEVELS");
+		}
+	}
 
-            
-            // SKINS (sin pedir nombres nuevamente)
-            
+	// HELPERS
 
-            PlayerType p1Type =
-                chooseSkin("Player 1");
+	private JButton createMenuButton(String text, Color color) {
 
-            if (p1Type == null) {
-                return;
-            }
+		JButton btn = new OutlineButton(text, color, Color.BLACK, 2);
 
-            PlayerType p2Type =
-                chooseSkin("Player 2");
+		btn.setForeground(Color.WHITE);
 
-            if (p2Type == null) {
-                return;
-            }
+		btn.setFocusPainted(false);
 
-            Color p1Border =
-                chooseBorder(
-                    "P1 Border",
-                    p1Type.getColor()
-                );
+		btn.setFont(new Font("Arial Black", Font.BOLD, 16));
 
-            Color p2Border =
-                chooseBorder(
-                    "P2 Border",
-                    p2Type.getColor()
-                );
+		return btn;
+	}
 
-            
-            // INICIAR JUEGO CON MISMOS NOMBRES
-            
+	private PlayerType chooseSkin(String title) {
 
-            gamePanel.startLevelPvP(
-                level,
-                player1Name,
-                p1Type.name(),
-                p1Border,
-                player2Name,
-                p2Type.name(),
-                p2Border
-            );
+		PlayerTypeSelectorDialog dlg = new PlayerTypeSelectorDialog(this, title);
 
-        } catch (Exception e) {
+		dlg.setVisible(true);
 
-            JOptionPane.showMessageDialog(
-                this,
-                "Error iniciando juego:\n"
-                + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
+		return dlg.isConfirmed() ? dlg.getSelectedType() : null;
+	}
 
+	private Color chooseBorder(String title, Color initial) {
 
-    // PAUSE
+		ColorSelectorDialog dlg = new ColorSelectorDialog(this, title, initial);
 
+		dlg.setVisible(true);
 
-    private void showPauseDialog() {
+		return dlg.isConfirmed() ? dlg.getSelectedColor() : initial;
+	}
 
-        Object[] options = {"Reanudar", "Ir al menú"};
-        
-        int option = JOptionPane.showOptionDialog(
-            this,
-            "Juego pausado",
-            "Pausa",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE,
-            null,
-            options,
-            options[0]
-        );
+	// ACTIONS
 
-        if (option == 0) {
-            // Reanudar
-            gamePanel.setPaused(false);
-        } else {
-            // Volver al menú
-            gamePanel.stopGame();
-            cardLayout.show(container, "LEVELS");
-        }
-    }
+	private void prepareActions() {
 
+		addWindowListener(new WindowAdapter() {
 
-    // LEVEL COMPLETE
+			@Override
+			public void windowClosing(WindowEvent e) {
+				exit();
+			}
+		});
 
+		btnExitGame.addActionListener(e -> exit());
 
-    private void showLevelCompleteDialog() {
+		btnPlayGame.addActionListener(e -> cardLayout.show(container, "MODE"));
 
-        String message;
+		btnLeaderBoard.addActionListener(e -> cardLayout.show(container, "LEADERBOARD"));
+	}
 
-        // En modo PvP, mostrar información del ganador
-        if (currentGameMode.getMode() == GameModeData.Mode.PLAYER_VS_PLAYER) {
-            String winner = gamePanel.getPvPWinner();
-            int winnerCoins = gamePanel.getPlayerCoins(winner);
-            int winnerDeaths = gamePanel.getPlayerDeaths(winner);
-            int otherPlayerCoins = 0;
-            int otherPlayerDeaths = 0;
-            String otherPlayer = "";
+	// EXIT
 
-            if (player1Name.equals(winner)) {
-                otherPlayer = player2Name;
-                otherPlayerCoins = gamePanel.getPlayerCoins(player2Name);
-                otherPlayerDeaths = gamePanel.getPlayerDeaths(player2Name);
-            } else {
-                otherPlayer = player1Name;
-                otherPlayerCoins = gamePanel.getPlayerCoins(player1Name);
-                otherPlayerDeaths = gamePanel.getPlayerDeaths(player1Name);
-            }
+	private void exit() {
 
-            message = "¡" + winner + " ha ganado!\n\n" +
-                    "Ganador: " + winner + "\n" +
-                    "  Monedas: " + winnerCoins + "\n" +
-                    "  Muertes: " + winnerDeaths + "\n\n" +
-                    "Perdedor: " + otherPlayer + "\n" +
-                    "  Monedas: " + otherPlayerCoins + "\n" +
-                    "  Muertes: " + otherPlayerDeaths + "\n\n" +
-                    "¿Siguiente nivel?";
-        } else {
-            message = "¡Nivel completado!\n¿Siguiente nivel?";
-        }
+		int option = JOptionPane.showConfirmDialog(this, "¿Salir del juego?", "Confirmar", JOptionPane.YES_NO_OPTION);
 
-        int option =
-            JOptionPane.showConfirmDialog(
-                this,
-                message,
-                "Victory",
-                JOptionPane.YES_NO_OPTION
-            );
+		if (option == JOptionPane.YES_OPTION) {
 
-        if (option == JOptionPane.YES_OPTION) {
+			System.exit(0);
+		}
+	}
 
-            currentLevel++;
+	// MAIN
 
-            if (currentLevel > 3) {
+	public static void main(String[] args) {
 
-                JOptionPane.showMessageDialog(
-                    this,
-                    "¡Completaste todos los niveles!"
-                );
+		SwingUtilities.invokeLater(() -> {
 
-                cardLayout.show(container, "MENU");
+			HardestGameGUI gui = new HardestGameGUI();
 
-                return;
-            }
-
-            currentGameMode.setLevel(currentLevel);
-
-            // En modo PvP, iniciar el siguiente nivel sin pedir nombres nuevamente
-            if (currentGameMode.getMode() == GameModeData.Mode.PLAYER_VS_PLAYER) {
-                startGameWithModeSamePlayers();
-            } else {
-                startGameWithMode();
-            }
-
-        } else {
-
-            cardLayout.show(container, "LEVELS");
-        }
-    }
-
-
-    // HELPERS
-
-
-    private JButton createMenuButton(
-    String text,
-    Color color
-    ) {
-
-        JButton btn =
-            new OutlineButton(
-                text,
-                color,
-                Color.BLACK,
-                2
-            );
-
-        btn.setForeground(Color.WHITE);
-
-        btn.setFocusPainted(false);
-
-        btn.setFont(
-            new Font("Arial Black", Font.BOLD, 16)
-        );
-
-        return btn;
-    }
-
-    private PlayerType chooseSkin(String title) {
-
-        PlayerTypeSelectorDialog dlg =
-            new PlayerTypeSelectorDialog(
-                this,
-                title
-            );
-
-        dlg.setVisible(true);
-
-        return dlg.isConfirmed()
-        ? dlg.getSelectedType()
-        : null;
-    }
-
-    private Color chooseBorder(
-    String title,
-    Color initial
-    ) {
-
-        ColorSelectorDialog dlg =
-            new ColorSelectorDialog(
-                this,
-                title,
-                initial
-            );
-
-        dlg.setVisible(true);
-
-        return dlg.isConfirmed()
-        ? dlg.getSelectedColor()
-        : initial;
-    }
-
-
-    // ACTIONS
-
-
-    private void prepareActions() {
-
-        addWindowListener(
-            new WindowAdapter() {
-
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    exit();
-                }
-            }
-        );
-
-        btnExitGame.addActionListener(
-            e -> exit()
-        );
-
-        btnPlayGame.addActionListener(
-            e -> cardLayout.show(container, "MODE")
-        );
-
-        btnLeaderBoard.addActionListener(
-            e -> cardLayout.show(container, "LEADERBOARD")
-        );
-    }
-
-
-    // EXIT
-
-
-    private void exit() {
-
-        int option =
-            JOptionPane.showConfirmDialog(
-                this,
-                "¿Salir del juego?",
-                "Confirmar",
-                JOptionPane.YES_NO_OPTION
-            );
-
-        if (option == JOptionPane.YES_OPTION) {
-
-            System.exit(0);
-        }
-    }
-
-
-    // MAIN
-
-
-    public static void main(String[] args) {
-
-        SwingUtilities.invokeLater(() -> {
-
-                    HardestGameGUI gui =
-                        new HardestGameGUI();
-
-                    gui.setVisible(true);
-            });
-    }
+			gui.setVisible(true);
+		});
+	}
 }
