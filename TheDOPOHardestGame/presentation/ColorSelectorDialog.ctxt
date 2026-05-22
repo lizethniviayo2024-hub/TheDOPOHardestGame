@@ -1,0 +1,12 @@
+#BlueJ class context
+comment0.target=ColorSelectorDialog
+comment0.text=\r\n\ Di\u00E1logo\ para\ seleccionar\ color\ del\ jugador.\r\n\ Soporta\ colores\ predefinidos\ y\ personalizados.\r\n
+comment1.params=owner\ title\ initialColor
+comment1.target=ColorSelectorDialog(java.awt.Frame,\ java.lang.String,\ java.awt.Color)
+comment2.params=
+comment2.target=void\ prepareUI()
+comment3.params=
+comment3.target=java.awt.Color\ getSelectedColor()
+comment4.params=
+comment4.target=boolean\ isConfirmed()
+numComments=5

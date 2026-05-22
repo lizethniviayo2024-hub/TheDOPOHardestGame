@@ -1,0 +1,24 @@
+#BlueJ class context
+comment0.target=GameEntity
+comment0.text=\r\n\ Clase\ base\ para\ todos\ los\ objetos\ del\ juego.\r\n\ Contiene\ posici\u00F3n\ y\ tama\u00F1o.\ Todos\ los\ objetos\ del\ juego\ heredan\ de\ esta.\r\n
+comment1.params=xPosition\ yPosition\ width\ height
+comment1.target=GameEntity(int,\ int,\ int,\ int)
+comment2.params=
+comment2.target=void\ update()
+comment2.text=\r\n\ Actualiza\ el\ estado\ de\ la\ entidad\ en\ cada\ tick\ del\ game\ loop.\r\n
+comment3.params=
+comment3.target=int\ getX()
+comment4.params=
+comment4.target=int\ getY()
+comment5.params=
+comment5.target=int\ getWidth()
+comment6.params=
+comment6.target=int\ getHeight()
+comment7.params=x
+comment7.target=void\ setX(int)
+comment8.params=y
+comment8.target=void\ setY(int)
+comment9.params=
+comment9.target=java.awt.Rectangle\ getBounds()
+comment9.text=\r\n\ Retorna\ el\ rect\u00E1ngulo\ de\ colisi\u00F3n\ del\ objeto.\r\n\ Se\ usa\ en\ CollisionController.\r\n
+numComments=10

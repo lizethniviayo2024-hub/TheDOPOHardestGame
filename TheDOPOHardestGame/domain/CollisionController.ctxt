@@ -1,0 +1,21 @@
+#BlueJ class context
+comment0.target=CollisionController
+comment0.text=\r\n\ Detecta\ y\ resuelve\ colisiones\ entre\ objetos\ del\ juego.\r\n
+comment1.params=collidables
+comment1.target=CollisionController(java.util.List)
+comment2.params=player\ coins\ safeZones\ score\ gameMode
+comment2.target=boolean\ checkCollisions(Player,\ java.util.List,\ java.util.List,\ ScoreController,\ java.lang.String)
+comment2.text=\r\n\ Revisa\ colisiones\ del\ jugador\ contra\ todos\ \r\n\ Retorna\ true\ si\ el\ nivel\ fue\ completado\ (solo\ en\ modo\ single\ player).\r\n\ En\ PvP\ retorna\ false\ porque\ se\ maneja\ en\ checkFinalZoneReachedForPlayer.\r\n
+comment3.params=player\ safeZones\ coins
+comment3.target=boolean\ checkFinalZoneReachedForPlayer(Player,\ java.util.List,\ java.util.List)
+comment3.text=\r\n\ Verifica\ si\ un\ jugador\ lleg\u00F3\ a\ su\ zona\ final\ en\ modo\ PvP.\r\n\ Respeta\ el\ ownerName\ de\ la\ zona\:\ si\ tiene\ due\u00F1o,\ solo\ aplica\ a\ ese\ jugador.\r\n
+comment4.params=coins
+comment4.target=boolean\ allCoinsCollected(java.util.List)
+comment5.params=x\ y\ w\ h\ walls
+comment5.target=boolean\ collidesWithWall(int,\ int,\ int,\ int,\ java.util.List)
+comment6.params=p1\ p2\ score
+comment6.target=boolean\ checkPlayerCollision(Player,\ Player,\ ScoreController)
+comment6.text=\r\n\ Colisi\u00F3n\ entre\ dos\ jugadores\:\ ambos\ reaparecen\ y\ se\ registran\ sus\ muertes.\r\n
+comment7.params=players\ score
+comment7.target=void\ checkAllPlayersCollision(java.util.List,\ ScoreController)
+numComments=8

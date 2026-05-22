@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=Walls
+comment0.text=\r\n\ Pared\ s\u00F3lida.\ Nadie\ puede\ atravesarla.\r\n
+comment1.params=x\ y\ width\ height
+comment1.target=Walls(int,\ int,\ int,\ int)
+comment2.params=
+comment2.target=void\ update()
+comment3.params=player
+comment3.target=void\ onPlayerEnter(Player)
+numComments=4

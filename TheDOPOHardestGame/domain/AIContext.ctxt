@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.target=AIContext
+comment0.text=\r\n\ la\ estrategia\ solo\ lee,\ nunca\ modifica\ al\ jugador.\r\n
+comment1.params=x\ y\ width\ height\ speed
+comment1.target=AIContext(int,\ int,\ int,\ int,\ int)
+numComments=2

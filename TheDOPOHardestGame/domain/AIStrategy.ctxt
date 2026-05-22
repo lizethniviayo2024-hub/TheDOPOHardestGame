@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.target=AIStrategy
+comment0.text=\r\n\ Define\ c\u00F3mo\ una\ IA\ decide\ su\ pr\u00F3xima\ direcci\u00F3n\ de\ movimiento.\r\n
+comment1.params=context
+comment1.target=java.lang.String\ computeDirection(AIContext)
+comment1.text=\r\n\ Calcula\ la\ direcci\u00F3n\ a\ tomar\ en\ el\ tick\ actual.\r\n\r\n\ @param\ context\ \ Informaci\u00F3n\ de\ la\ posici\u00F3n\ y\ tama\u00F1o\ del\ jugador\ IA.\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Las\ implementaciones\ pueden\ ignorar\ lo\ que\ no\ necesiten.\r\n\ @return\ \ \ \ \ \ \ \ \ Direcci\u00F3n\ como\ String,\ nunca\ null.\ "IDLE"\ si\ no\ hay\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ movimiento\ deseado.\r\n
+numComments=2

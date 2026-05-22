@@ -1,0 +1,5 @@
+#BlueJ class context
+comment0.target=Collidable
+comment1.params=player\ score
+comment1.target=void\ onPlayerCollision(Player,\ ScoreController)
+numComments=2
