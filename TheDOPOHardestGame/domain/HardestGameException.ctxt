@@ -1,6 +1,0 @@
-#BlueJ class context
-comment0.target=HardestGameException
-comment0.text=\r\n\ Excepci\u00F3n\ propia\ del\ juego.\ Se\ lanza\ en\ errores\ de\ configuraci\u00F3n\ y\ persistencia.\r\n
-comment1.params=message
-comment1.target=HardestGameException(java.lang.String)
-numComments=2

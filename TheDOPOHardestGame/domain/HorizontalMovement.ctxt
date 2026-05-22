@@ -1,8 +1,0 @@
-#BlueJ class context
-comment0.target=HorizontalMovement
-comment0.text=\r\n\ Movimiento\ horizontal\ que\ rebota\ entre\ minX\ y\ maxX.\r\n\ El\ enemigo\ se\ mueve\ en\ l\u00EDnea\ recta\ y\ rebota\ al\ llegar\ al\ l\u00EDmite.\r\n
-comment1.params=enemy\ minX\ maxX\ speed
-comment1.target=HorizontalMovement(Enemy,\ int,\ int,\ int)
-comment2.params=
-comment2.target=void\ move()
-numComments=3
