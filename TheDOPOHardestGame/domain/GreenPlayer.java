@@ -20,6 +20,7 @@ public class GreenPlayer extends Player {
             size,
             baseSpeed,
             new Color(50, 180, 50)
+            
         );
 
         shieldActive = true;

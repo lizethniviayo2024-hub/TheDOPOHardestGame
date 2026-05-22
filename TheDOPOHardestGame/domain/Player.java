@@ -8,6 +8,7 @@ public abstract class Player extends GameEntity {
 
     private int spawnX;
     private int spawnY;
+    private String playerType;
 
     protected int baseSpeed;
     protected int speed;
@@ -15,13 +16,15 @@ public abstract class Player extends GameEntity {
     protected Color playerColor;
     protected Color borderColor;
 
-    public Player(String name,
+    public Player(
+    String name,
     int x,
     int y,
     int width,
     int height,
     int baseSpeed,
-    Color color) {
+    Color color
+    ) {
 
         super(x, y, width, height);
 
@@ -35,6 +38,7 @@ public abstract class Player extends GameEntity {
 
         this.spawnX = x;
         this.spawnY = y;
+
     }
 
     public void setBorderColor(Color borderColor) {
@@ -61,7 +65,6 @@ public abstract class Player extends GameEntity {
         setX(spawnX);
         setY(spawnY);
     }
-
 
     public int getSpeed() {
         return speed;
@@ -90,4 +93,5 @@ public abstract class Player extends GameEntity {
     public boolean isShieldActive() {
         return false;
     }
+
 }

@@ -14,6 +14,13 @@ public class LevelLoader {
 
     static {
         register("COIN",             t -> new Coin(num(t,1), num(t,2), num(t,3)));
+        register("LIFE", t ->
+        new LifeSource(num(t,1), num(t,2), 20, 20)
+    );
+
+    register("BOMB", t ->
+        new Bomb(num(t,1), num(t,2), 20, 20)
+    );		
         register("SAFEZONE_INITIAL", t -> new SafeZone(num(t,1), num(t,2), num(t,3), num(t,4), SafeZone.Type.INITIAL));
         register("SAFEZONE_FINAL",   t -> new SafeZone(num(t,1), num(t,2), num(t,3), num(t,4), SafeZone.Type.FINAL));
         register("SAFEZONE_MIDDLE",  t -> new SafeZone(num(t,1), num(t,2), num(t,3), num(t,4), SafeZone.Type.INTERMEDIATE));

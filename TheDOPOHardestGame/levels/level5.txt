@@ -3,7 +3,7 @@
 # Demuestra enemigos que siguen rutas geométricas predefinidas
 # Tablero: 500x300
 TIME 100
-PLAYER 250 260 20 4
+PLAYER 30 140 20 4
 SAFEZONE_INITIAL 0 0 50 300
 SAFEZONE_FINAL 450 0 50 300
 COIN 150 80 14

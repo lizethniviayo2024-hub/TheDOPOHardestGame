@@ -35,3 +35,12 @@
 /Walls.class
 /Zone.class
 /LevelDesigner.class
+/Bomb.class
+/Collectible$Shape.class
+/Collectible.class
+/DopoHardestGameTest$1.class
+/DopoHardestGameTest$2.class
+/DopoHardestGameTest.class
+/LifeSource.class
+/LoadManager.class
+/SaveManager.class

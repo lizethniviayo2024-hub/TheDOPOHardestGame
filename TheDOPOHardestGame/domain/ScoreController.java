@@ -10,14 +10,16 @@ import java.util.Map;
 public class ScoreController {
     private Map<String, Integer> playerDeaths; // Muertes por jugador
     private Map<String, Integer> playerCoins;  // Monedas por jugador
+    private Map<String, Integer> playerLives;  // Vidas extra por jugador (LifeSource)
     private int totalDeaths;
     private int totalCoins;
 
     public ScoreController() {
         this.playerDeaths = new HashMap<>();
-        this.playerCoins = new HashMap<>();
-        this.totalDeaths = 0;
-        this.totalCoins = 0;
+        this.playerCoins  = new HashMap<>();
+        this.playerLives  = new HashMap<>();
+        this.totalDeaths  = 0;
+        this.totalCoins   = 0;
     }
 
     /**
@@ -55,8 +57,9 @@ public class ScoreController {
 
     // Getters
     public int getTotalDeaths() { return totalDeaths; }
+
     public int getTotalCoins() { return totalCoins; }
-    
+
     public int getPlayerDeaths(String playerName) {
         return playerDeaths.getOrDefault(playerName, 0);
     }
@@ -65,10 +68,32 @@ public class ScoreController {
         return playerCoins.getOrDefault(playerName, 0);
     }
 
+    /**
+     * Registra una vida extra obtenida por el jugador (LifeSource).
+     */
+    public void addLife(String playerName) {
+        playerLives.put(playerName, playerLives.getOrDefault(playerName, 0) + 1);
+    }
+
+    public int getPlayerLives(String playerName) {
+        return playerLives.getOrDefault(playerName, 0);
+    }
+
     public void reset() {
         playerDeaths.clear();
         playerCoins.clear();
+        playerLives.clear();
         totalDeaths = 0;
-        totalCoins = 0;
+        totalCoins  = 0;
+    }
+
+    public void setPlayerDeaths(String playerName, int deaths) {
+
+        playerDeaths.put(playerName, deaths);
+    }
+
+    public void setPlayerCoins(String playerName, int coins) {
+
+        playerCoins.put(playerName, coins);
     }
 }
